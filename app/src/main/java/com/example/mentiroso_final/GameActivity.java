@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import com.example.mentiroso_final.game.Card;
+import com.example.mentiroso_final.game.Player;
 
 public class GameActivity extends AppCompatActivity {
 
@@ -19,9 +20,12 @@ public class GameActivity extends AppCompatActivity {
     ArrayList<ImageView> opCardViews = new ArrayList<>();
     ArrayList<ImageView> flippedCardsView = new ArrayList<>();
     static ArrayList<Card> cardsDeck = new ArrayList<>();
+    ArrayList<Card> allCards;
     ImageView deck;
     Button echarBtt, mentirBtt;
     Boolean turn;
+    Player player1 = new Player(1);
+    Player player2 = new Player(2);
     //ArrayList<Card> selectedCards = new ArrayList<>();
 
 
@@ -68,6 +72,9 @@ public class GameActivity extends AppCompatActivity {
         } */
 
         //click listeners restantes
+
+        //inicializar baraja
+        setDeck();
 
         cards = new ArrayList<>();
 
@@ -271,5 +278,54 @@ public class GameActivity extends AppCompatActivity {
                 image.setImageResource(R.drawable.oros_12);
                 break;
         }
+    }
+    void setDeck(){
+        cardsDeck.clear();
+        int imageId = 0;
+        for (int i = 1; i <= 4; i++) {
+            for (int j = 1; j <= 12; j++) {
+                if (j == 8 || j == 9) continue;
+                if (i == 1) {
+                    if (j < 10)
+                        imageId = getResources().getIdentifier("oros_0" + j, "drawable", getPackageName());
+                    else
+                        imageId = getResources().getIdentifier("oros_" + j, "drawable", getPackageName());
+                }
+                if (i == 2) {
+                    if (j < 10)
+                        imageId = getResources().getIdentifier("copas_0" + j, "drawable", getPackageName());
+                    else
+                        imageId = getResources().getIdentifier("copas_" + j, "drawable", getPackageName());
+                }
+                if (i == 3) {
+                    if (j < 10)
+                        imageId = getResources().getIdentifier("espadas_0" + j, "drawable", getPackageName());
+                    else
+                        imageId = getResources().getIdentifier("espadas_" + j, "drawable", getPackageName());
+                }
+                if (i == 4) {
+                    if (j < 10)
+                        imageId = getResources().getIdentifier("bastos_0" + j, "drawable", getPackageName());
+                    else
+                        imageId = getResources().getIdentifier("bastos_" + j, "drawable", getPackageName());
+                }
+                cardsDeck.add(new Card(i, j, imageId));
+            }
+        }
+        this.allCards = new ArrayList<>(cardsDeck);
+
+    }
+
+    public void distributeCards() {
+        Collections.shuffle(cardsDeck);
+        for (int i = 0; i < 7; i++) {
+            player1.addCard(cardsDeck.get(0));
+            cardsDeck.remove(0);
+        }
+        for (int i = 0; i < 7; i++) {
+            player2.addCard(cardsDeck.get(0));
+            cardsDeck.remove(0);
+        }
+        cardsDeck.remove(0);
     }
 }

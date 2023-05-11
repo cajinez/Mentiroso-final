@@ -36,18 +36,3 @@ public class Card implements Comparable<Card> {
         return Integer.compare(this.value, o.value);
     }
 }
-
-class SortByRank implements Comparator<Card> {
-
-    @Override
-    public int compare(Card o1, Card o2) {
-        if (o1.suit < o2.suit) {
-            return -1;
-        } else if (o1.suit == o2.suit) {
-            if (o1.value < o2.value) {
-                return -1;
-            } else return 1;
-        } else return 1;
-    }
-
-}
