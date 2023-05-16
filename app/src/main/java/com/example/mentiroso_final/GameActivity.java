@@ -1,7 +1,11 @@
 package com.example.mentiroso_final;
 
 import android.annotation.SuppressLint;
+import android.content.ClipData;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.view.DragEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -27,7 +31,9 @@ public class GameActivity extends AppCompatActivity {
     Boolean turn;
     Player player1 = new Player(1);
     Player player2 = new Player(2);
+    Card selectedCard;
     //ArrayList<Card> selectedCards = new ArrayList<>();
+
 
 
     @Override
@@ -54,23 +60,19 @@ public class GameActivity extends AppCompatActivity {
         echarBtt.setEnabled(false);
         mentirBtt.setEnabled(false);
 
-       /* for(int i=0;i<6;i++){
-            cardViews.get(i).setVisibility(View.INVISIBLE);
-            opCardViews.get(i).setVisibility(View.INVISIBLE);
-        } /*
 
         //aqui por os seOnClickListeners dos botóns
 
         //click listener de las cartas
-        /* for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 5; i++) {
             cardViews.get(i).setOnLongClickListener(listenClick);
             cardViews.get(i).setOnDragListener(listenDrag);
             cardViews.get(i).setOnClickListener(v -> {
-                if (turn && player1.getPlayerCards().size() == 8) {
+                if (turn && player1.getPlayerCards().size() == 6) {
                     selectCardView(v);
                 }
             });
-        } */
+        }
 
         //click listeners restantes
 
@@ -156,5 +158,55 @@ public class GameActivity extends AppCompatActivity {
             i++;
         }
         cardViews.forEach(ImageView::clearColorFilter);
+    }
+    View.OnLongClickListener listenClick = v -> {
+
+        ClipData data = ClipData.newPlainText("", "");
+        DragShadow dragShadow = new DragShadow(v);
+
+        v.startDragAndDrop(data, dragShadow, v, 0);
+
+        return false;
+    };
+    View.OnDragListener listenDrag = (v, event) -> {
+        int dragEvent = event.getAction();
+
+        switch (dragEvent) {
+            case DragEvent.ACTION_DRAG_ENTERED:
+                //Log.i("Drag Event", "Entered");
+                break;
+
+            case DragEvent.ACTION_DRAG_EXITED:
+                //Log.i("Drag Event", "Exited");
+                break;
+
+            case DragEvent.ACTION_DROP:
+                ImageView target = (ImageView) v;
+
+                ImageView dragged = (ImageView) event.getLocalState();
+
+                Drawable target_draw = target.getDrawable();
+                Drawable dragged_draw = dragged.getDrawable();
+                Object targetTag = target.getTag();
+                Object draggedTag = dragged.getTag();
+
+                dragged.setImageDrawable(target_draw);
+                target.setImageDrawable(dragged_draw);
+
+                dragged.setTag(targetTag);
+                target.setTag(draggedTag);
+                Collections.swap(player1.getPlayerCards(), player1.getPlayerCards().indexOf(targetTag), player1.getPlayerCards().indexOf(draggedTag));
+                break;
+        }
+        return true;
+    };
+    void selectCardView(View cardView) {
+        cardViews.forEach(cv -> {
+            if (cv.getId() == cardView.getId()) cv.setColorFilter(Color.parseColor("#41AFB42B"));
+            else cv.clearColorFilter();
+        });
+        selectedCard = (Card) cardView.getTag();
+        echarBtt.setEnabled(true);
+        mentirBtt.setEnabled(true);
     }
 }
