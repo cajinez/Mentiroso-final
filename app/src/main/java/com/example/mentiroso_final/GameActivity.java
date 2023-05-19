@@ -28,7 +28,7 @@ public class GameActivity extends AppCompatActivity {
     ArrayList<Card> allCards;
     ImageView deck;
     Button echarBtt, mentirBtt;
-    Boolean turn;
+    Boolean turn = true;
     Player player1 = new Player(1);
     Player player2 = new Player(2);
     Card selectedCard;
@@ -61,14 +61,12 @@ public class GameActivity extends AppCompatActivity {
         mentirBtt.setEnabled(false);
 
 
-        //aqui por os seOnClickListeners dos botóns
+        //aqui por os setOnClickListeners dos botóns
 
         //click listener de las cartas
-        for (int i = 0; i < 5; i++) {
-            cardViews.get(i).setOnLongClickListener(listenClick);
-            cardViews.get(i).setOnDragListener(listenDrag);
+        for (int i = 0; i < 6; i++) {
             cardViews.get(i).setOnClickListener(v -> {
-                if (turn && player1.getPlayerCards().size() == 6) {
+                if (turn ) {
                     selectCardView(v);
                 }
             });
@@ -159,47 +157,6 @@ public class GameActivity extends AppCompatActivity {
         }
         cardViews.forEach(ImageView::clearColorFilter);
     }
-    View.OnLongClickListener listenClick = v -> {
-
-        ClipData data = ClipData.newPlainText("", "");
-        DragShadow dragShadow = new DragShadow(v);
-
-        v.startDragAndDrop(data, dragShadow, v, 0);
-
-        return false;
-    };
-    View.OnDragListener listenDrag = (v, event) -> {
-        int dragEvent = event.getAction();
-
-        switch (dragEvent) {
-            case DragEvent.ACTION_DRAG_ENTERED:
-                //Log.i("Drag Event", "Entered");
-                break;
-
-            case DragEvent.ACTION_DRAG_EXITED:
-                //Log.i("Drag Event", "Exited");
-                break;
-
-            case DragEvent.ACTION_DROP:
-                ImageView target = (ImageView) v;
-
-                ImageView dragged = (ImageView) event.getLocalState();
-
-                Drawable target_draw = target.getDrawable();
-                Drawable dragged_draw = dragged.getDrawable();
-                Object targetTag = target.getTag();
-                Object draggedTag = dragged.getTag();
-
-                dragged.setImageDrawable(target_draw);
-                target.setImageDrawable(dragged_draw);
-
-                dragged.setTag(targetTag);
-                target.setTag(draggedTag);
-                Collections.swap(player1.getPlayerCards(), player1.getPlayerCards().indexOf(targetTag), player1.getPlayerCards().indexOf(draggedTag));
-                break;
-        }
-        return true;
-    };
     void selectCardView(View cardView) {
         cardViews.forEach(cv -> {
             if (cv.getId() == cardView.getId()) cv.setColorFilter(Color.parseColor("#41AFB42B"));
