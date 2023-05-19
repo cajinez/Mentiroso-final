@@ -160,7 +160,10 @@ public class GameActivity extends AppCompatActivity {
     void selectCardView(View cardView) {
         cardViews.forEach(cv -> {
             if (cv.getId() == cardView.getId()) cv.setColorFilter(Color.parseColor("#41AFB42B"));
-            else cv.clearColorFilter();
+            else if ((cv.getId() == cardView.getId()) && (cv.getColorFilter()==Color.parseColor("#41AFB42B"))){
+
+            }
+            //else cv.clearColorFilter();
         });
         selectedCard = (Card) cardView.getTag();
         echarBtt.setEnabled(true);
