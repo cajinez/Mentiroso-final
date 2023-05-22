@@ -32,7 +32,7 @@ public class GameActivity extends AppCompatActivity {
     Player player1 = new Player(1);
     Player player2 = new Player(2);
     Card selectedCard;
-    //ArrayList<Card> selectedCards = new ArrayList<>();
+    ArrayList<Card> selectedCards = new ArrayList<>();
 
 
 
@@ -159,11 +159,18 @@ public class GameActivity extends AppCompatActivity {
     }
     void selectCardView(View cardView) {
         cardViews.forEach(cv -> {
-            if (cv.getId() == cardView.getId()) cv.setColorFilter(Color.parseColor("#41AFB42B"));
-            else if ((cv.getId() == cardView.getId()) && (cv.getColorFilter()==Color.parseColor("#41AFB42B"))){
+            if (cv.getId() == cardView.getId()){   //si é a que clico
+                if(selectedCards.contains((Card) cardView.getTag())){  //si está dentro das cartas seleccionadas quitoa do array e quitolle o color filter
+                   selectedCards.remove((Card) cardView.getTag());
+                    cv.clearColorFilter();
+                }
+
+                else { //se non está engadoa e poñolle o color filter
+                    selectedCards.add((Card) cardView.getTag());
+                    cv.setColorFilter(Color.parseColor("#41AFB42B"));
+                }
 
             }
-            //else cv.clearColorFilter();
         });
         selectedCard = (Card) cardView.getTag();
         echarBtt.setEnabled(true);
