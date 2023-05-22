@@ -5,6 +5,7 @@ import android.content.ClipData;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
 import android.widget.Button;
@@ -158,6 +159,7 @@ public class GameActivity extends AppCompatActivity {
         cardViews.forEach(ImageView::clearColorFilter);
     }
     void selectCardView(View cardView) {
+        echarBtt.setEnabled(false); //al volver a entrar volvemos inactivo el boton de echar hasta comprobar si puede
         cardViews.forEach(cv -> {
             if (cv.getId() == cardView.getId()){   //si é a que clico
                 if(selectedCards.contains((Card) cardView.getTag())){  //si está dentro das cartas seleccionadas quitoa do array e quitolle o color filter
@@ -169,11 +171,23 @@ public class GameActivity extends AppCompatActivity {
                     selectedCards.add((Card) cardView.getTag());
                     cv.setColorFilter(Color.parseColor("#41AFB42B"));
                 }
+                //Log.i("INFO",Integer.toString(selectedCards.get(0).getValue()));
 
             }
         });
-        selectedCard = (Card) cardView.getTag();
-        echarBtt.setEnabled(true);
-        mentirBtt.setEnabled(true);
+        int i=0;
+        boolean puedeEchar = true;
+        for (Card c : selectedCards) {
+            for (int j = 0; j < selectedCards.size(); j++) {
+                if (selectedCards.get(i).getValue() != selectedCards.get(j).getValue() ) {
+                    puedeEchar= false;
+                }
+            }
+            i++;
+        }
+
+        if(selectedCards.size()==0) puedeEchar=false;
+        if(puedeEchar) echarBtt.setEnabled(true);
+        //mentirBtt.setEnabled(true);
     }
 }
