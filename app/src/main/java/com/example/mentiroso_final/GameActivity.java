@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.mentiroso_final.game.Card;
+import com.example.mentiroso_final.game.Game;
 import com.example.mentiroso_final.game.Player;
 
 import java.util.ArrayList;
@@ -30,10 +31,11 @@ public class GameActivity extends AppCompatActivity {
     ImageView deck;
     Button echarBtt, mentirBtt;
     Boolean turn = true;
-    Player player1 = new Player(1);
-    Player player2 = new Player(2);
+    public static Player player1 = new Player(1);
+    public static Player player2 = new Player(2);
     Card selectedCard;
     ArrayList<Card> selectedCards = new ArrayList<>();
+    Game gameState;
 
 
 
@@ -63,6 +65,13 @@ public class GameActivity extends AppCompatActivity {
 
 
         //aqui por os setOnClickListeners dos botóns
+
+        echarBtt.setOnClickListener(v ->{
+            turn = false;
+            gameState.echarCarta(selectedCards, player1);
+        });
+
+
 
         //click listener de las cartas
         for (int i = 0; i < 6; i++) {
