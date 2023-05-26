@@ -8,8 +8,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Spinner;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -29,7 +32,7 @@ public class GameActivity extends AppCompatActivity {
     static ArrayList<Card> cardsDeck = new ArrayList<>();
     ArrayList<Card> allCards;
     ImageView deck;
-    Button echarBtt, mentirBtt;
+    Button echarBtt, mentirBtt, levantarBtt;
     Boolean turn = true;
     public static Player player1 = new Player(1);
     public static Player player2 = new Player(2);
@@ -39,6 +42,7 @@ public class GameActivity extends AppCompatActivity {
 
 
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,10 +62,17 @@ public class GameActivity extends AppCompatActivity {
         opCardViews.add(findViewById(R.id.cardOp5));
         opCardViews.add(findViewById(R.id.cardOp6));
 
+        Spinner spinner = findViewById(R.id.spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.array_select, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
         echarBtt = findViewById(R.id.echarBtt);
         mentirBtt = findViewById(R.id.mentirBtt);
+        levantarBtt = findViewById(R.id.levantarBtt);
         echarBtt.setEnabled(false);
         mentirBtt.setEnabled(false);
+        levantarBtt.setEnabled(false);
 
 
         //aqui por os setOnClickListeners dos botóns
@@ -97,6 +108,7 @@ public class GameActivity extends AppCompatActivity {
         displayPlayerCards();
 
     }
+
     @SuppressLint("DiscouragedApi")
     void setDeck(){
         cardsDeck.clear();
