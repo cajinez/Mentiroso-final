@@ -106,6 +106,8 @@ public class GameActivity extends AppCompatActivity {
         distributeCards();
         //mostrar imagenes
         displayPlayerCards();
+        gameState = new Game(cardsDeck);
+        gameState.allCards = new ArrayList<>(this.allCards);
 
     }
 
