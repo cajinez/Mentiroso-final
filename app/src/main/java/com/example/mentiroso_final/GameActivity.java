@@ -13,6 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -63,6 +64,8 @@ public class GameActivity extends AppCompatActivity {
         opCardViews.add(findViewById(R.id.cardOp6));
 
         Spinner spinner = findViewById(R.id.spinner);
+
+
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.array_select, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -75,6 +78,16 @@ public class GameActivity extends AppCompatActivity {
         levantarBtt.setEnabled(false);
 
 
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+                Object item = parent.getItemAtPosition(pos);
+                String textSpinner = spinner.getSelectedItem().toString();
+                Log.i("spinner",textSpinner);
+                Log.i("spinner", (String) item);
+            }
+            public void onNothingSelected(AdapterView<?> parent) { }
+        });
         //aqui por os setOnClickListeners dos botóns
 
         echarBtt.setOnClickListener(v ->{
@@ -110,6 +123,12 @@ public class GameActivity extends AppCompatActivity {
         gameState.allCards = new ArrayList<>(this.allCards);
 
     }
+    public void onItemSelected(AdapterView<?> parent, View view,
+                               int pos, long id) {
+        // An item was selected. You can retrieve the selected item using
+        // parent.getItemAtPosition(pos)
+    }
+
 
     @SuppressLint("DiscouragedApi")
     void setDeck(){
