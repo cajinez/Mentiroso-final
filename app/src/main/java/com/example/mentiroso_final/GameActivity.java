@@ -30,8 +30,9 @@ public class GameActivity extends AppCompatActivity {
     ArrayList<ImageView> cardViews = new ArrayList<>();
     ArrayList<ImageView> opCardViews = new ArrayList<>();
     ArrayList<ImageView> flippedCardsView = new ArrayList<>();
-    static ArrayList<Card> cardsDeck = new ArrayList<>();
-    ArrayList<Card> allCards;
+    static ArrayList<Card> cardsDeck = new ArrayList<>(); //as do mazo (eliminar ao acabar)
+    ArrayList<Card> tableCards = new ArrayList<>();
+    ArrayList<Card> allCards; //todas
     ImageView deck;
     Button echarBtt, mentirBtt, levantarBtt;
     Boolean turn = true;
@@ -64,12 +65,11 @@ public class GameActivity extends AppCompatActivity {
         opCardViews.add(findViewById(R.id.cardOp6));
 
         Spinner spinner = findViewById(R.id.spinner);
-
-
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.array_select, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+
         echarBtt = findViewById(R.id.echarBtt);
         mentirBtt = findViewById(R.id.mentirBtt);
         levantarBtt = findViewById(R.id.levantarBtt);
@@ -123,12 +123,6 @@ public class GameActivity extends AppCompatActivity {
         gameState.allCards = new ArrayList<>(this.allCards);
 
     }
-    public void onItemSelected(AdapterView<?> parent, View view,
-                               int pos, long id) {
-        // An item was selected. You can retrieve the selected item using
-        // parent.getItemAtPosition(pos)
-    }
-
 
     @SuppressLint("DiscouragedApi")
     void setDeck(){

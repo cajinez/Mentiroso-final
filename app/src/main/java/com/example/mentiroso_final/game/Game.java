@@ -13,6 +13,7 @@ public class Game {
 
     public int roundNumber;
     public boolean gameOver = false;
+    public boolean fueMentira = false;
     private Player player1;
     private Player player2;
     private Player currentPlayer;
@@ -34,7 +35,25 @@ public class Game {
 
     }
     public void echarCarta(ArrayList<Card> cards, Player player){
-        //quitar las cartas del arraylis
+        //quitar las cartas del arraylist
+        int i=0;
+        for (Card c : cards ){
+            player.deleteCard(cards.get(i));
+            i++;
+        }
+        //añadirlas a las cartas de la mesa
+        i=0;
+        for (Card c : cards ){
+            tableCards.add(cards.get(i));
+            i++;
+        }
+        //comprobamos si fue mentira
+        fueMentira(cards);
+    }
+
+    public void fueMentira(ArrayList<Card> cards){
+        //comprobar si todas las cartas eran iguales o no
+        //this.fueMentira =
     }
     public void mentir(ArrayList<Card> card, Player player){
 
