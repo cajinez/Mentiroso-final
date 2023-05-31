@@ -1,19 +1,15 @@
 package com.example.mentiroso_final;
 
 import android.annotation.SuppressLint;
-import android.content.ClipData;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.DragEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -33,12 +29,11 @@ public class GameActivity extends AppCompatActivity {
     static ArrayList<Card> cardsDeck = new ArrayList<>(); //as do mazo (eliminar ao acabar)
     ArrayList<Card> tableCards = new ArrayList<>();
     ArrayList<Card> allCards; //todas
-    ImageView deck;
+    ImageView deck, imgTableCard;
     Button echarBtt, mentirBtt, levantarBtt;
     Boolean turn = true;
     public static Player player1 = new Player(1);
     public static Player player2 = new Player(2);
-    Card selectedCard;
     ArrayList<Card> selectedCards = new ArrayList<>();
     Game gameState;
 
@@ -51,6 +46,8 @@ public class GameActivity extends AppCompatActivity {
         setContentView(R.layout.activity_game);
 
         deck = (ImageView) findViewById(R.id.deck);
+        imgTableCard = (ImageView) findViewById(R.id.imgTableCard);
+
         cardViews.add(findViewById(R.id.card1));
         cardViews.add(findViewById(R.id.card2));
         cardViews.add(findViewById(R.id.card3));
@@ -63,6 +60,7 @@ public class GameActivity extends AppCompatActivity {
         opCardViews.add(findViewById(R.id.cardOp4));
         opCardViews.add(findViewById(R.id.cardOp5));
         opCardViews.add(findViewById(R.id.cardOp6));
+
 
         Spinner spinner = findViewById(R.id.spinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
@@ -91,8 +89,11 @@ public class GameActivity extends AppCompatActivity {
         //aqui por os setOnClickListeners dos botóns
 
         echarBtt.setOnClickListener(v ->{
+            imgTableCard.setEnabled(false);
             turn = false;
+            gameState.fueMentira = false;
             gameState.echarCarta(selectedCards, player1);
+            displayPlayerCards();
         });
 
 
@@ -193,6 +194,10 @@ public class GameActivity extends AppCompatActivity {
             i++;
         }
         cardViews.forEach(ImageView::clearColorFilter);
+        //si el array de cartas del tablero no está vacío mostramos el reverso de la carta, si no no mostramos nada
+        if(tableCards.isEmpty()) imgTableCard.setVisibility(View.INVISIBLE);
+        else imgTableCard.setImageResource(R.drawable.reverse);
+
     }
     void selectCardView(View cardView) {
         echarBtt.setEnabled(false); //al volver a entrar volvemos inactivo el boton de echar hasta comprobar si puede
