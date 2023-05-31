@@ -1,5 +1,7 @@
 package com.example.mentiroso_final.game;
 
+import android.util.Log;
+
 import com.example.mentiroso_final.GameActivity;
 
 import java.sql.Array;
@@ -8,7 +10,7 @@ import java.util.ArrayList;
 public class Game {
     public ArrayList<Card> allCards;
     public ArrayList<Card> deck;
-    public ArrayList<Card> tableCards;
+    public ArrayList<Card> tableCards = new ArrayList<>();
     public ArrayList<Card> discardCards;
 
     public int roundNumber;

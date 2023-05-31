@@ -118,10 +118,12 @@ public class GameActivity extends AppCompatActivity {
         setDeck();
         //repartir
         distributeCards();
-        //mostrar imagenes
-        displayPlayerCards();
         gameState = new Game(cardsDeck);
         gameState.allCards = new ArrayList<>(this.allCards);
+        //mostrar imagenes
+        displayPlayerCards();
+
+
 
     }
 
@@ -195,8 +197,12 @@ public class GameActivity extends AppCompatActivity {
         }
         cardViews.forEach(ImageView::clearColorFilter);
         //si el array de cartas del tablero no está vacío mostramos el reverso de la carta, si no no mostramos nada
-        if(tableCards.isEmpty()) imgTableCard.setVisibility(View.INVISIBLE);
-        else imgTableCard.setImageResource(R.drawable.reverse);
+        if(gameState.tableCards.isEmpty()) imgTableCard.setVisibility(View.INVISIBLE);
+        else {
+            imgTableCard.setImageResource(R.drawable.reverse);
+            Log.i("CARTAS", gameState.tableCards.toString());
+        }
+
 
     }
     void selectCardView(View cardView) {
