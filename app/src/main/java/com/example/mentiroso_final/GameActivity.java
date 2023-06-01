@@ -86,26 +86,25 @@ public class GameActivity extends AppCompatActivity {
             }
             public void onNothingSelected(AdapterView<?> parent) { }
         });
-        //aqui por os setOnClickListeners dos botóns
 
-        echarBtt.setOnClickListener(v ->{
-            imgTableCard.setEnabled(false);
+        if (turn) levantarBtt.setEnabled(true);
+        //aqui por os setOnClickListeners dos botóns
+        levantarBtt.setOnClickListener(v ->{
             turn = false;
-            gameState.fueMentira = false;
+            gameState.levantarCarta();
+
+            displayPlayerCards();
+        });
+        echarBtt.setOnClickListener(v ->{
+            //imgTableCard.setEnabled(false);
+            turn = false;
             gameState.echarCarta(selectedCards, player1);
             displayPlayerCards();
         });
 
 
 
-        //click listener de las cartas
-        for (int i = 0; i < 6; i++) {
-            cardViews.get(i).setOnClickListener(v -> {
-                if (turn ) {
-                    selectCardView(v);
-                }
-            });
-        }
+
 
         //click listeners restantes
 
@@ -122,6 +121,15 @@ public class GameActivity extends AppCompatActivity {
         gameState.allCards = new ArrayList<>(this.allCards);
         //mostrar imagenes
         displayPlayerCards();
+
+        //click listener de las cartas
+        for (int i = 0; i < player1.getPlayerCards().size(); i++) {
+            cardViews.get(i).setOnClickListener(v -> {
+                if (turn) {
+                    selectCardView(v);
+                }
+            });
+        }
 
 
 
@@ -200,9 +208,10 @@ public class GameActivity extends AppCompatActivity {
         if(gameState.tableCards.isEmpty()) imgTableCard.setVisibility(View.INVISIBLE);
         else {
             imgTableCard.setImageResource(R.drawable.reverse);
-            Log.i("CARTAS", gameState.tableCards.toString());
+            imgTableCard.setVisibility(View.VISIBLE);
+            Log.i("CARTAS EN EL MAZO DE LA MESA", gameState.tableCards.toString());
         }
-
+        Log.i("player1 cards", Integer.toString(player1.getPlayerCards().size()));
 
     }
     void selectCardView(View cardView) {
@@ -218,7 +227,7 @@ public class GameActivity extends AppCompatActivity {
                     selectedCards.add((Card) cardView.getTag());
                     cv.setColorFilter(Color.parseColor("#41AFB42B"));
                 }
-                //Log.i("INFO",Integer.toString(selectedCards.get(0).getValue()));
+                Log.i("CARTAS SELECCIONADAS", selectedCards.toString());
 
             }
         });

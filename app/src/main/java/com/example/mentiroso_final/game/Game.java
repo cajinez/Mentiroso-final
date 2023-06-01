@@ -49,8 +49,16 @@ public class Game {
             tableCards.add(cards.get(i));
             i++;
         }
-        //comprobamos si fue mentira
-        fueMentira(cards);
+        //como sabemos que se echaron por las restricciones al seleccionar carta, no fue mentira
+        this.fueMentira=false;
+    }
+    public void levantarCarta(){
+        //fueMentira?
+        //IMPORTANTE saber qué jugador fue el anterior
+        //si sí, ese jugador se lleva las cartas
+        //si no me las lelvo yo
+        //y se retiran del mazo de la mesa
+        tableCards.clear();
     }
 
     public void fueMentira(ArrayList<Card> cards){
@@ -58,7 +66,9 @@ public class Game {
         //this.fueMentira =
     }
     public void mentir(ArrayList<Card> card, Player player){
+        //hacer lo mismo que en levantar pero poniendo fuementira a true
 
+        this.fueMentira=true;
     }
 
 }
