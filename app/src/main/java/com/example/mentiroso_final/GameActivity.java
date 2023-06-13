@@ -1,27 +1,35 @@
 package com.example.mentiroso_final;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.graphics.Color;
+import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mentiroso_final.game.Card;
 import com.example.mentiroso_final.game.Game;
 import com.example.mentiroso_final.game.Player;
+import com.example.mentiroso_final.CardAdapter;
+
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class GameActivity extends AppCompatActivity {
-
     Boolean DEBUG = false;
     ArrayList<ImageView> cardViews = new ArrayList<>();
     ArrayList<ImageView> opCardViews = new ArrayList<>();
@@ -36,6 +44,8 @@ public class GameActivity extends AppCompatActivity {
     public static Player player2 = new Player(2);
     ArrayList<Card> selectedCards = new ArrayList<>();
     Game gameState;
+    private CardAdapter cardAdapter;
+    RecyclerView recyclerView;
 
 
 
@@ -48,12 +58,7 @@ public class GameActivity extends AppCompatActivity {
         deck = (ImageView) findViewById(R.id.deck);
         imgTableCard = (ImageView) findViewById(R.id.imgTableCard);
 
-        cardViews.add(findViewById(R.id.card1));
-        cardViews.add(findViewById(R.id.card2));
-        cardViews.add(findViewById(R.id.card3));
-        cardViews.add(findViewById(R.id.card4));
-        cardViews.add(findViewById(R.id.card5));
-        cardViews.add(findViewById(R.id.card6));
+
         opCardViews.add(findViewById(R.id.cardOp1));
         opCardViews.add(findViewById(R.id.cardOp2));
         opCardViews.add(findViewById(R.id.cardOp3));
@@ -87,21 +92,39 @@ public class GameActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) { }
         });
 
-        if (turn) levantarBtt.setEnabled(true);
+
         //aqui por os setOnClickListeners dos botóns
         levantarBtt.setOnClickListener(v ->{
+            Log.i("levantar", String.valueOf(turn));
             turn = false;
             gameState.levantarCarta();
 
             displayPlayerCards();
+            levantarBtt.setEnabled(false);
         });
         echarBtt.setOnClickListener(v ->{
             //imgTableCard.setEnabled(false);
             turn = false;
             gameState.echarCarta(selectedCards, player1);
+            selectedCards.clear();
             displayPlayerCards();
+            echarBtt.setEnabled(false);
+            //habria que deshabilitar el recycler view pero con esto creo que llega
+            for(int i = 0; i<recyclerView.getChildCount();i++) { //recorremos todos los elementos del recycler para quitar el colorfilter
+
+                View view = recyclerView.getChildAt(i);
+                if (view instanceof LinearLayout) {
+                    LinearLayout ly = (LinearLayout) view;
+                    ImageView cv = (ImageView) ly.getChildAt(0);
+                    cv.clearColorFilter();
+                }
+            }
         });
 
+
+
+        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
 
 
@@ -120,20 +143,28 @@ public class GameActivity extends AppCompatActivity {
         gameState = new Game(cardsDeck);
         gameState.allCards = new ArrayList<>(this.allCards);
         //mostrar imagenes
+        cardAdapter = new CardAdapter(player1.getPlayerCards(), getApplicationContext(), this);
+        recyclerView.setAdapter(cardAdapter);
+        recyclerView.setEnabled(false);
         displayPlayerCards();
 
+
+
+
         //click listener de las cartas
-        for (int i = 0; i < player1.getPlayerCards().size(); i++) {
+        /*for (int i = 0; i < player1.getPlayerCards().size(); i++) {
             cardViews.get(i).setOnClickListener(v -> {
                 if (turn) {
                     selectCardView(v);
                 }
             });
-        }
+        } */
 
 
 
     }
+
+
 
     @SuppressLint("DiscouragedApi")
     void setDeck(){
@@ -187,7 +218,7 @@ public class GameActivity extends AppCompatActivity {
     }
 
     public void displayPlayerCards() {
-        int i = 0;
+       /* int i = 0;
         for (Card c : player1.getPlayerCards()) {
             cardViews.get(i).setImageResource(c.getImageId());
             cardViews.get(i).setTag(c);
@@ -202,8 +233,9 @@ public class GameActivity extends AppCompatActivity {
             }
             opCardViews.get(i).setVisibility(View.VISIBLE);
             i++;
-        }
-        cardViews.forEach(ImageView::clearColorFilter);
+        } */
+        if (turn && tableCards.size()!=0) levantarBtt.setEnabled(true);
+        cardAdapter.notifyDataSetChanged(); //notificamos que ha cambiado el conjunto de datos del recycler
         //si el array de cartas del tablero no está vacío mostramos el reverso de la carta, si no no mostramos nada
         if(gameState.tableCards.isEmpty()) imgTableCard.setVisibility(View.INVISIBLE);
         else {
@@ -216,7 +248,46 @@ public class GameActivity extends AppCompatActivity {
     }
     void selectCardView(View cardView) {
         echarBtt.setEnabled(false); //al volver a entrar volvemos inactivo el boton de echar hasta comprobar si puede
-        cardViews.forEach(cv -> {
+        Log.i("TAG de cardView", cardView.getTag().toString());
+        ImageView cv = (ImageView) cardView;
+
+
+        if(selectedCards.contains((Card) cardView.getTag())){  //si está dentro das cartas seleccionadas quitoa do array e quitolle o color filter
+            selectedCards.remove((Card) cardView.getTag());
+            cv.clearColorFilter();
+        }
+
+        else { //se non está engadoa e poñolle o color filter
+            selectedCards.add((Card) cardView.getTag());
+            cv.setColorFilter(Color.parseColor("#41AFB42B"));
+        }
+        Log.i("CARTAS SELECCIONADAS", selectedCards.toString());
+
+        /* for(int i = 0; i<recyclerView.getChildCount();i++){
+
+            View view = recyclerView.getChildAt(i);
+            if (view instanceof LinearLayout) {
+                LinearLayout ly = (LinearLayout) view;
+                ImageView cv = (ImageView) ly.getChildAt(0);
+
+               if (cv.getTag() == cardView.getTag()){   //si é a que clico
+                    if(selectedCards.contains((Card) cardView.getTag())){  //si está dentro das cartas seleccionadas quitoa do array e quitolle o color filter
+                        selectedCards.remove((Card) cardView.getTag());
+                        cv.clearColorFilter();
+                    }
+
+                    else { //se non está engadoa e poñolle o color filter
+                        selectedCards.add((Card) cardView.getTag());
+                        cv.setColorFilter(Color.parseColor("#41AFB42B"));
+                    }
+                    Log.i("CARTAS SELECCIONADAS", selectedCards.toString());
+
+                }
+            } */
+
+
+
+        /*cardViews.forEach(cv -> {
             if (cv.getId() == cardView.getId()){   //si é a que clico
                 if(selectedCards.contains((Card) cardView.getTag())){  //si está dentro das cartas seleccionadas quitoa do array e quitolle o color filter
                    selectedCards.remove((Card) cardView.getTag());
@@ -230,7 +301,7 @@ public class GameActivity extends AppCompatActivity {
                 Log.i("CARTAS SELECCIONADAS", selectedCards.toString());
 
             }
-        });
+        }); */
         int i=0;
         boolean puedeEchar = true;
         for (Card c : selectedCards) {
@@ -241,9 +312,11 @@ public class GameActivity extends AppCompatActivity {
             }
             i++;
         }
-
         if(selectedCards.size()==0) puedeEchar=false;
-        if(puedeEchar) echarBtt.setEnabled(true);
+        if(puedeEchar && turn) echarBtt.setEnabled(true);
+
+
         //mentirBtt.setEnabled(true);
     }
+
 }

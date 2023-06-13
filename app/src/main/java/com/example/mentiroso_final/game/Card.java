@@ -26,6 +26,7 @@ public class Card implements Comparable<Card> {
     public int getValue() {
         return value;
     }
+    public int getSuit() { return suit; }
 
     public int getPayoff() {
         return this.payoff;
