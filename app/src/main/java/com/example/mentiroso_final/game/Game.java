@@ -12,6 +12,7 @@ public class Game {
     public ArrayList<Card> deck;
     public ArrayList<Card> tableCards = new ArrayList<>();
     public ArrayList<Card> discardCards;
+    public int numeroJugada;
 
     public int roundNumber;
     public boolean gameOver = false;
@@ -51,6 +52,8 @@ public class Game {
         }
         //como sabemos que se echaron por las restricciones al seleccionar carta, no fue mentira
         this.fueMentira=false;
+        this.numeroJugada = cards.get(0).getValue();
+        Log.i("numero jugada", String.valueOf(numeroJugada));
     }
     public void levantarCarta(){
         //fueMentira?
@@ -65,8 +68,25 @@ public class Game {
         //comprobar si todas las cartas eran iguales o no
         //this.fueMentira =
     }
-    public void mentir(ArrayList<Card> card, Player player){
+    public void mentir(ArrayList<Card> cards, Player player, int valorMentira){
         //hacer lo mismo que en levantar pero poniendo fuementira a true
+        //quitar las cartas del arraylist
+        int i=0;
+        for (Card c : cards ){
+            player.deleteCard(cards.get(i));
+            i++;
+        }
+        if(tableCards.size() == 0){
+            this.numeroJugada = valorMentira;
+        }
+        //añadirlas a las cartas de la mesa
+        i=0;
+        for (Card c : cards ){
+            tableCards.add(cards.get(i));
+            i++;
+        }
+        //como sabemos que se echaron por las restricciones al seleccionar carta, no fue mentira
+        Log.i("numero jugada", String.valueOf(numeroJugada));
 
         this.fueMentira=true;
     }
