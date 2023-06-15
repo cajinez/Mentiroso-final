@@ -7,96 +7,6 @@
     android:background="@drawable/tapete"
     tools:context=".GameActivity">
 
-    <ImageView
-        android:id="@+id/deck"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="119dp"
-        android:layout_marginBottom="162dp"
-        android:scaleType="centerInside"
-        android:src="@drawable/reverse"
-        app:layout_constraintBottom_toTopOf="@+id/lay"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layOp"
-        app:layout_constraintVertical_bias="0.0"
-        tools:ignore="MissingConstraints" />
-
-
-    <LinearLayout
-        android:id="@+id/layOp"
-        android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:orientation="horizontal"
-        android:weightSum="6"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/cardOp1"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_weight="1"
-            android:scaleType="centerInside"
-            android:src="@drawable/reverse" />
-
-        <ImageView
-            android:id="@+id/cardOp2"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_weight="1"
-            android:scaleType="centerInside"
-            android:src="@drawable/reverse" />
-
-        <ImageView
-            android:id="@+id/cardOp3"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_weight="1"
-            android:scaleType="centerInside"
-            android:src="@drawable/reverse" />
-
-        <ImageView
-            android:id="@+id/cardOp4"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_weight="1"
-            android:scaleType="centerInside"
-            android:src="@drawable/reverse" />
-
-        <ImageView
-            android:id="@+id/cardOp5"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_weight="1"
-            android:scaleType="centerInside"
-            android:src="@drawable/reverse" />
-
-        <ImageView
-            android:id="@+id/cardOp6"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_weight="1"
-            android:scaleType="centerInside"
-            android:src="@drawable/reverse" />
-
-    </LinearLayout>
 
     <Button
         android:id="@+id/echarBtt"
@@ -124,47 +34,21 @@
         android:id="@+id/levantarBtt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
         android:text="Levantar"
         app:layout_constraintBottom_toTopOf="@+id/echarBtt"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/deck"
-        app:layout_constraintVertical_bias="1.0" />
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout"
-        android:layout_width="150dp"
-        android:layout_height="200dp"
-        android:layout_marginTop="1dp"
-        android:layout_marginEnd="1dp"
-        android:layout_marginBottom="1dp"
-        app:layout_constraintEnd_toStartOf="@+id/deck"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layOp">
-
-        <ImageView
-            android:id="@+id/imgTableCard"
-            android:layout_width="150dp"
-            android:layout_height="200dp"
-            android:src="@drawable/reverse"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Spinner
         android:id="@+id/spinner"
         android:layout_width="306dp"
         android:layout_height="82dp"
-        android:layout_marginTop="148dp"
         android:minHeight="48dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+        tools:layout_editor_absoluteY="499dp" />
 
 
     <androidx.recyclerview.widget.RecyclerView
@@ -178,5 +62,27 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/spinner"
         app:layout_constraintVertical_bias="1.0" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewOp1"
+        android:layout_width="407dp"
+        android:layout_height="146dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imgTableCard"
+        android:layout_width="150dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginBottom="148dp"
+        android:src="@drawable/reverse"
+        app:layout_constraintBottom_toTopOf="@+id/spinner"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/recyclerViewOp1"
+        app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

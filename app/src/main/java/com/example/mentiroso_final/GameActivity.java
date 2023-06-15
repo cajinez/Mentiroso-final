@@ -44,7 +44,8 @@ public class GameActivity extends AppCompatActivity {
     ArrayList<Card> selectedCards = new ArrayList<>();
     Game gameState;
     private CardAdapter cardAdapter;
-    RecyclerView recyclerView;
+    private CardAdapterOp cardAdapterOp1;
+    RecyclerView recyclerView, recyclerViewOp1;
     private int valorSpinner;
 
 
@@ -55,16 +56,7 @@ public class GameActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
-        deck = (ImageView) findViewById(R.id.deck);
         imgTableCard = (ImageView) findViewById(R.id.imgTableCard);
-
-
-        opCardViews.add(findViewById(R.id.cardOp1));
-        opCardViews.add(findViewById(R.id.cardOp2));
-        opCardViews.add(findViewById(R.id.cardOp3));
-        opCardViews.add(findViewById(R.id.cardOp4));
-        opCardViews.add(findViewById(R.id.cardOp5));
-        opCardViews.add(findViewById(R.id.cardOp6));
 
 
         Spinner spinner = findViewById(R.id.spinner);
@@ -111,6 +103,7 @@ public class GameActivity extends AppCompatActivity {
             //habria que deshabilitar el recycler view pero con esto creo que llega
             clearColorFilterRecycler();
             Log.i("table cards activity", gameState.tableCards.toString());
+            jugadaAleatoria();
         });
 
         mentirBtt.setOnClickListener(v ->{
@@ -126,6 +119,9 @@ public class GameActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+
+        recyclerViewOp1 = findViewById(R.id.recyclerViewOp1);
+        recyclerViewOp1.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
 
 
@@ -147,6 +143,10 @@ public class GameActivity extends AppCompatActivity {
         cardAdapter = new CardAdapter(player1.getPlayerCards(), getApplicationContext(), this);
         recyclerView.setAdapter(cardAdapter);
         recyclerView.setEnabled(false);
+
+        cardAdapterOp1 = new CardAdapterOp(player2.getPlayerCards(), getApplicationContext(), this);
+        recyclerViewOp1.setAdapter(cardAdapterOp1);
+        recyclerViewOp1.setEnabled(false);
         displayPlayerCards();
 
 
@@ -163,6 +163,18 @@ public class GameActivity extends AppCompatActivity {
 
 
 
+    }
+    public void jugadaAleatoria(){
+        ArrayList<Card> jugada = new ArrayList<>();
+        jugada.add(player2.getPlayerCards().get(0));
+        jugada.add(player2.getPlayerCards().get(1));
+        jugada.add(player2.getPlayerCards().get(2));
+        jugada.add(player2.getPlayerCards().get(3));
+        jugada.add(player2.getPlayerCards().get(4));
+        jugada.add(player2.getPlayerCards().get(5));
+        jugada.add(player2.getPlayerCards().get(6));
+        gameState.echarCarta(jugada, player2);
+        displayPlayerCards();
     }
 
     void clearColorFilterRecycler(){
@@ -217,11 +229,11 @@ public class GameActivity extends AppCompatActivity {
 
     public void distributeCards() {
         Collections.shuffle(cardsDeck);
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 10; i++) {
             player1.addCard(cardsDeck.get(0));
             cardsDeck.remove(0);
         }
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 10; i++) {
             player2.addCard(cardsDeck.get(0));
             cardsDeck.remove(0);
         }
@@ -247,6 +259,7 @@ public class GameActivity extends AppCompatActivity {
         } */
         if (turn && gameState.tableCards.size()!=0) levantarBtt.setEnabled(true);
         cardAdapter.notifyDataSetChanged(); //notificamos que ha cambiado el conjunto de datos del recycler
+        cardAdapterOp1.notifyDataSetChanged();
         //si el array de cartas del tablero no está vacío mostramos el reverso de la carta, si no no mostramos nada
         if(gameState.tableCards.isEmpty()) imgTableCard.setVisibility(View.INVISIBLE);
         else {

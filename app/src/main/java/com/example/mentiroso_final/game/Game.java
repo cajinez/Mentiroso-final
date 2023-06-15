@@ -20,6 +20,7 @@ public class Game {
     private Player player1;
     private Player player2;
     private Player currentPlayer;
+    private int currentIdPlayer;
 
     public Game(ArrayList<Card> deck){
         this.deck = deck;
@@ -32,7 +33,8 @@ public class Game {
         this.deck = new ArrayList<>(gameState.deck);
         this.player1 = new Player(gameState.player1);
         this.player2 = new Player(gameState.player2);
-        this.currentPlayer = this.player2;
+        //this.currentPlayer = this.player2;
+        this.currentIdPlayer = 2;
         this.allCards = gameState.allCards;
         this.gameOver = gameState.gameOver;
 
