@@ -315,6 +315,7 @@ public class GameActivity extends AppCompatActivity {
         if (puedeEchar && turn) echarBtt.setEnabled(true);
         else echarBtt.setEnabled(false);
         Log.i("puedeeechar", String.valueOf(puedeEchar));
+        Log.i("turn", String.valueOf(turn));
 
         i = 0;
         boolean puedeMentir = false;
