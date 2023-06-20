@@ -1,50 +1,94 @@
 package com.example.mentiroso_final.game;
 
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.example.mentiroso_final.GameActivity;
 
 import java.sql.Array;
 import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
 
 public class Game {
     public ArrayList<Card> allCards;
     public ArrayList<Card> deck;
     public ArrayList<Card> tableCards = new ArrayList<>();
     public ArrayList<Card> discardCards;
-    public int numeroJugada;
 
+    public boolean personaYaHaJugado = false;
+    //private ArrayList<Player> IAs = new ArrayList<>();
+    public int numeroJugada;
     public int roundNumber;
     public boolean gameOver = false;
     public boolean fueMentira = false;
-    private Player player1;
-    private Player player2;
-    private Player currentPlayer;
-    private int currentIdPlayer;
+    public Player player1;
+    public Player player2;
+    public Player player3;
+    public Player player4;
+    public ArrayList<Player> players = new ArrayList<>();
+    public int currentPlayer;
+    private GameActivity gameActivity;
 
-    public Game(ArrayList<Card> deck){
+    private CountDownLatch latch;
+    private GameTask gameTask;
+
+    public Game(ArrayList<Card> deck, GameActivity gameActivity){
         this.deck = deck;
-        this.player1 = GameActivity.player1;
-        this.player2 = GameActivity.player2;
-        this.currentPlayer = this.player1;
+        this.gameActivity = gameActivity;
+        this.player1 = gameActivity.player1;
+        this.player2 = gameActivity.player2;
+        this.player3 = gameActivity.player3;
+        this.player4 = gameActivity.player4;
+        this.currentPlayer = this.player1.getId();
+        latch = new CountDownLatch(1);
+        gameTask = new GameTask();
         //estado jugador cogiendo
     }
-    public Game(Game gameState){
-        this.deck = new ArrayList<>(gameState.deck);
-        this.player1 = new Player(gameState.player1);
-        this.player2 = new Player(gameState.player2);
-        //this.currentPlayer = this.player2;
-        this.currentIdPlayer = 2;
-        this.allCards = gameState.allCards;
-        this.gameOver = gameState.gameOver;
 
+    public void startGame(){
+        players.add(this.player1);
+        players.add(this.player2);
+        players.add(this.player3);
+        players.add(this.player4);
+
+        gameTask.execute();
     }
+
+    private void playTurn() {
+        // Lógica para el turno de un jugador
+        if (currentPlayer != 1) {
+            Log.i("LE TOCA A EN PLAYTURN", Integer.toString(currentPlayer));
+            players.get(currentPlayer - 1).play();
+
+        }
+    }
+    public void nextPlayer() {
+        // Cambia al siguiente jugador
+        if(currentPlayer == 4){
+            currentPlayer = 1;
+            gameActivity.setTurnTrue();
+        }
+        else{
+            currentPlayer += 1;
+        }
+    }
+
     public void echarCarta(ArrayList<Card> cards, Player player){
         //quitar las cartas del arraylist
         int i=0;
+        String cartasMesa = "";
+        String cartasJugadas = "Jugador " + player.getId() + " juega:\n";
         for (Card c : cards ){
+            cartasJugadas = cartasJugadas + c.getValue() + " de " + c.getSuit() + "\n";
             player.deleteCard(cards.get(i));
             i++;
+        }
+        if(tableCards.size() == 0){
+            this.numeroJugada = cards.get(0).getValue();
+            player1.setNumeroJugada(numeroJugada);
+            player2.setNumeroJugada(numeroJugada);
+            player3.setNumeroJugada(numeroJugada);
+            player4.setNumeroJugada(numeroJugada);
         }
         //añadirlas a las cartas de la mesa
         i=0;
@@ -52,29 +96,25 @@ public class Game {
             tableCards.add(cards.get(i));
             i++;
         }
+
         //como sabemos que se echaron por las restricciones al seleccionar carta, no fue mentira
         this.fueMentira=false;
-        this.numeroJugada = cards.get(0).getValue();
-        Log.i("numero jugada", String.valueOf(numeroJugada));
-    }
-    public void levantarCarta(){
-        //fueMentira?
-        //IMPORTANTE saber qué jugador fue el anterior
-        //si sí, ese jugador se lleva las cartas
-        //si no me las lelvo yo
-        //y se retiran del mazo de la mesa
-        tableCards.clear();
-    }
-
-    public void fueMentira(ArrayList<Card> cards){
-        //comprobar si todas las cartas eran iguales o no
-        //this.fueMentira =
+        for(int j = 0; j < tableCards.size(); j++){
+            cartasMesa = cartasMesa + tableCards.get(j).getValue() + " de " + tableCards.get(j).getSuit() + "\n";
+        }
+        Log.i("SE JUEGA A ", String.valueOf(numeroJugada));
+        Log.i("CARTAS JUGADAS", cartasJugadas);
+        Log.i("CARTAS EN LA MESA", tableCards.toString());
+        latch.countDown();
     }
     public void mentir(ArrayList<Card> cards, Player player, int valorMentira){
         //hacer lo mismo que en levantar pero poniendo fuementira a true
         //quitar las cartas del arraylist
         int i=0;
+        String cartasMesa = "";
+        String cartasJugadas = "Jugador " + player.getId() + " juega:\n";
         for (Card c : cards ){
+            cartasJugadas = cartasJugadas + c.getValue() + " de " + c.getSuit() + "\n";
             player.deleteCard(cards.get(i));
             i++;
         }
@@ -87,10 +127,87 @@ public class Game {
             tableCards.add(cards.get(i));
             i++;
         }
+        for(int j = 0; j < tableCards.size(); j++){
+            cartasMesa = cartasMesa + tableCards.get(j).getValue() + " de " + tableCards.get(j).getSuit() + "\n";
+        }
         //como sabemos que se echaron por las restricciones al seleccionar carta, no fue mentira
-        Log.i("numero jugada", String.valueOf(numeroJugada));
-
+        Log.i("SE JUEGA A ", String.valueOf(numeroJugada));
+        Log.i("CARTAS JUGADAS", cartasJugadas);
+        Log.i("CARTAS EN LA MESA", tableCards.toString());
         this.fueMentira=true;
+        latch.countDown();
+    }
+    /*
+     * De momento así funciona, va a haber que cambiarlo al tener 4 jugadores
+     */
+    public void levantarCarta(){
+        String cartasMesa = "";
+        if(fueMentira){
+            for(int i = 0; i < tableCards.size(); i++){
+                if(currentPlayer == 1){
+                    player4.playerCards.add(tableCards.get(i));
+                }else if(currentPlayer == 2){
+                    player1.playerCards.add(tableCards.get(i));
+                }else if(currentPlayer == 3){
+                    player2.playerCards.add(tableCards.get(i));
+                }else if(currentPlayer == 4){
+                    player3.playerCards.add(tableCards.get(i));
+                }
+            }
+        }else {
+            for(int i = 0; i < tableCards.size(); i++){
+                if (currentPlayer == 1) {
+                    player1.playerCards.add(tableCards.get(i));
+                }else if (currentPlayer == 2) {
+                    player2.playerCards.add(tableCards.get(i));
+                }else if (currentPlayer == 3) {
+                    player3.playerCards.add(tableCards.get(i));
+                }else if (currentPlayer == 4) {
+                    player4.playerCards.add(tableCards.get(i));
+                }
+            }
+        }
+
+        for(int i = 0; i < tableCards.size(); i++){
+            cartasMesa = cartasMesa + tableCards.get(i).getValue() + " de " + tableCards.get(i).getSuit() + "\n";
+        }
+        Log.i("CARTAS LEVANTADAS", cartasMesa);
+
+        tableCards.clear();
+        latch.countDown();
+    }
+
+
+    //La comprobación para ver si se gano será mirar si el jugador anterior al anterior tiene 0 cartas
+    //es decir, si la persona es el jugador 1, hay una ia 2 que va despues de la persona, una ia 3 que va despues
+    //de la ia 2, si cuando es el turno de la ia 3 el juagdor 1 tiene 0 cartas, gana el jugador 1
+    // ó
+    //si un jugador levanta y con las cartas que chupa descarta y se queda con 0, gana
+    public Boolean isOver(){
+        Boolean isOver = false;
+        return isOver;
+    }
+    // Método para reiniciar el latch
+    public void resetSemaforo() {
+        latch = new CountDownLatch(1);
+    }
+
+    private class GameTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
+            while(!isOver()){
+                playTurn();
+                try {
+                    latch.await();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                resetSemaforo();
+
+                nextPlayer();
+            }
+            return null;
+        }
     }
 
 }
