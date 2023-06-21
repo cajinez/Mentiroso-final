@@ -17,7 +17,7 @@ public class Game {
 
     public boolean personaYaHaJugado = false;
     //private ArrayList<Player> IAs = new ArrayList<>();
-    public int numeroJugada;
+    public int numeroJugada = 0;
     public int roundNumber;
     public boolean gameOver = false;
     public boolean fueMentira = false;

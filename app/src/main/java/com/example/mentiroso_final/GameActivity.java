@@ -134,21 +134,23 @@ public class GameActivity extends AppCompatActivity {
 
         echarBtt.setOnClickListener(v -> {
             //imgTableCard.setEnabled(false);
+            echarBtt.setEnabled(false);
+            mentirBtt.setEnabled(false);
             turn = false;
             gameState.echarCarta(selectedCards, player1);
             selectedCards.clear();
             displayPlayerCards();
-            echarBtt.setEnabled(false);
             //habria que deshabilitar el recycler view pero con esto creo que llega
             clearColorFilterRecycler();
         });
 
         mentirBtt.setOnClickListener(v -> {
+            mentirBtt.setEnabled(false);
+            echarBtt.setEnabled(false);
             turn = false;
             gameState.mentir(selectedCards, player1, valorSpinner);
             selectedCards.clear();
             displayPlayerCards();
-            mentirBtt.setEnabled(false);
             clearColorFilterRecycler();
         });
         ///////////////////////////////////////////////////
@@ -201,17 +203,23 @@ public class GameActivity extends AppCompatActivity {
     }
 
     void clearColorFilterRecycler() {
-        Log.i("clearcolorrecycler","clearcolorrecycler");
-        for (int i = 0; i < recyclerView.getChildCount(); i++) { //recorremos todos los elementos del recycler para quitar el colorfilter
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Log.i("clearcolorrecycler", "clearcolorrecycler");
+                for (int i = 0; i < recyclerView.getChildCount(); i++) { //recorremos todos los elementos del recycler para quitar el colorfilter
 
-            View view = recyclerView.getChildAt(i);
-            if (view instanceof LinearLayout) {
-                LinearLayout ly = (LinearLayout) view;
-                ImageView cv = (ImageView) ly.getChildAt(0);
-                cv.clearColorFilter();
+                    View view = recyclerView.getChildAt(i);
+                    if (view instanceof LinearLayout) {
+                        LinearLayout ly = (LinearLayout) view;
+                        ImageView cv = (ImageView) ly.getChildAt(0);
+                        cv.clearColorFilter();
+                    }
+                }
             }
-        }
+        });
     }
+
 
     @SuppressLint("DiscouragedApi")
     void setDeck() {
@@ -312,25 +320,27 @@ public class GameActivity extends AppCompatActivity {
             i++;
         }
         if (selectedCards.size() == 0) puedeEchar = false;
-        if (puedeEchar && turn) echarBtt.setEnabled(true);
+        if (puedeEchar && turn && (gameState.numeroJugada==0 || selectedCards.get(0).getValue()==gameState.numeroJugada)) echarBtt.setEnabled(true);
         else echarBtt.setEnabled(false);
         Log.i("puedeeechar", String.valueOf(puedeEchar));
         Log.i("turn", String.valueOf(turn));
 
         i = 0;
-        boolean puedeMentir = false;
-        for (Card c : selectedCards) {
+        boolean puedeMentir = true;
+       /* for (Card c : selectedCards) {
             for (int j = 0; j < selectedCards.size(); j++) {
                 if (selectedCards.get(i).getValue() != selectedCards.get(j).getValue()) {
                     puedeMentir = true;
                 }
             }
             i++;
-        }
+        } */
         if (selectedCards.size() == 1) puedeMentir = true;
         if (selectedCards.size() == 0) puedeMentir = false;
         if (puedeMentir && turn) mentirBtt.setEnabled(true);
         else mentirBtt.setEnabled(false);
+
+        Log.i("CARTAS SELECCIONADAS",selectedCards.toString());
     }
 
     /*
