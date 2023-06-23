@@ -58,7 +58,7 @@ public class Game {
         // Lógica para el turno de un jugador
         if (currentPlayer != 1) {
             Log.i("LE TOCA A EN PLAYTURN", Integer.toString(currentPlayer));
-            players.get(currentPlayer - 1).play();
+            players.get(currentPlayer - 1).juegaIA();
 
         }
     }
@@ -78,6 +78,9 @@ public class Game {
         int i=0;
         String cartasMesa = "";
         String cartasJugadas = "Jugador " + player.getId() + " juega:\n";
+        if(player.getId() == 1){ player2.setNumeroJugadorAnterior(cards.size()); }
+        if(player.getId() == 2){ player3.setNumeroJugadorAnterior(cards.size()); }
+        if(player.getId() == 3){ player4.setNumeroJugadorAnterior(cards.size()); }
         for (Card c : cards ){
             cartasJugadas = cartasJugadas + c.getValue() + " de " + c.getSuit() + "\n";
             player.deleteCard(cards.get(i));
@@ -113,6 +116,11 @@ public class Game {
         int i=0;
         String cartasMesa = "";
         String cartasJugadas = "Jugador " + player.getId() + " juega:\n";
+
+        if(player.getId() == 1){ player2.setNumeroJugadorAnterior(cards.size()); }
+        if(player.getId() == 2){ player3.setNumeroJugadorAnterior(cards.size()); }
+        if(player.getId() == 3){ player4.setNumeroJugadorAnterior(cards.size()); }
+
         for (Card c : cards ){
             cartasJugadas = cartasJugadas + c.getValue() + " de " + c.getSuit() + "\n";
             player.deleteCard(cards.get(i));
@@ -142,28 +150,60 @@ public class Game {
      */
     public void levantarCarta(){
         String cartasMesa = "";
+        player1.setNumeroJugada(0);
+        player2.setNumeroJugada(0);
+        player3.setNumeroJugada(0);
+        player4.setNumeroJugada(0);
+        numeroJugada = 0;
+
+        player2.setNumeroJugadorAnterior(0);
+        player3.setNumeroJugadorAnterior(0);
+        player4.setNumeroJugadorAnterior(0);
+
         if(fueMentira){
             for(int i = 0; i < tableCards.size(); i++){
                 if(currentPlayer == 1){
                     player4.playerCards.add(tableCards.get(i));
+                    player2.seLaLevantan();
+                    player3.seLaLevantan();
                 }else if(currentPlayer == 2){
                     player1.playerCards.add(tableCards.get(i));
+                    player2.desconfie(1);
+                    player3.seLaLevantan();
+                    player4.seLaLevantan();
                 }else if(currentPlayer == 3){
                     player2.playerCards.add(tableCards.get(i));
+                    player3.desconfie(1);
+                    player4.seLaLevantan();
                 }else if(currentPlayer == 4){
                     player3.playerCards.add(tableCards.get(i));
+                    player2.seLaLevantan();
+                    player4.desconfie(1);
                 }
             }
         }else {
             for(int i = 0; i < tableCards.size(); i++){
                 if (currentPlayer == 1) {
+                    Log.i("Chupa el 1", "maricona");
                     player1.playerCards.add(tableCards.get(i));
+                    player2.seLaLevantan();
+                    player3.seLaLevantan();
+                    player4.seLaLevantan();
                 }else if (currentPlayer == 2) {
                     player2.playerCards.add(tableCards.get(i));
+                    player2.desconfie(0);
+                    player3.seLaLevantan();
+                    player4.seLaLevantan();
                 }else if (currentPlayer == 3) {
                     player3.playerCards.add(tableCards.get(i));
+                    player2.seLaLevantan();
+                    player3.desconfie(0);
+                    player4.seLaLevantan();
                 }else if (currentPlayer == 4) {
                     player4.playerCards.add(tableCards.get(i));
+                    player2.seLaLevantan();
+                    player3.seLaLevantan();
+                    player4.desconfie(0);
                 }
             }
         }

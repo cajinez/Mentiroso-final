@@ -37,6 +37,9 @@ public class CardAdapterOp extends RecyclerView.Adapter<CardAdapterOp.ViewHolder
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_card, parent, false);
+        ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
+        layoutParams.setMargins(0, 0, 0, 0);
+        view.setLayoutParams(layoutParams);
         return new ViewHolder(view);
     }
 

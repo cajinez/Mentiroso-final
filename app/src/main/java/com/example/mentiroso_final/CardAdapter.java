@@ -1,6 +1,7 @@
 package com.example.mentiroso_final;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,16 +46,14 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder>  {
         Card card = cardList.get(position);
         holder.imageCard.setTag(card);
         // Aquí, configura la imagen correspondiente según la carta
-        //Log.i("CardAdapter", Integer.toString(position));
         holder.imageCard.setImageResource(card.getImageId());
 
         holder.imageCard.setOnClickListener(v -> {
             // Realiza el registro (Log) cuando se hace clic en la imagen
-            //Log.i("ID de la ImageWiew", ""  + holder.imageCard.getTag());
-            //Log.i("ID de la ImageWiew", ""  + v.getTag());
             juegoActividad.selectCardView(v);
 
         });
+        if (! juegoActividad.selectedCards.contains((Card) holder.imageCard.getTag())) holder.imageCard.clearColorFilter();
     }
 
     @Override
