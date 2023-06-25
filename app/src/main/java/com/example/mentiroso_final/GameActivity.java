@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -47,11 +48,13 @@ public class GameActivity extends AppCompatActivity {
     public Player player4 = new Player(4, this);
 
     private CardAdapter cardAdapter;
-    private CardAdapterOp cardAdapterOp1, cardAdapterOp2, cardAdapterOp3;
+    private CardAdapterOp cardAdapterOp2;
+    private CardAdapterOpLateral cardAdapterOp1, cardAdapterOp3;
     RecyclerView recyclerView, recyclerViewOp1, recyclerViewOp2, recyclerViewOp3;
     Game gameState;
     private int valorSpinner;
     public AlertDialog.Builder builder;
+    TextView textOp1, textOp2, textOp3, textGen;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -103,6 +106,11 @@ public class GameActivity extends AppCompatActivity {
                 });
 
         AlertDialog alertDialog = builder.create();
+
+        textOp1 = findViewById(R.id.textOp1);
+        textOp2 = findViewById(R.id.textOp2);
+        textOp3 = findViewById(R.id.textOp3);
+        textGen = findViewById(R.id.textGen);
         ////////////////////////////////
 
 
@@ -142,6 +150,7 @@ public class GameActivity extends AppCompatActivity {
             displayPlayerCards();
             //habria que deshabilitar el recycler view pero con esto creo que llega
             //clearColorFilterRecycler();
+            textGen.setText("Se juega a"+ gameState.numeroJugada);
         });
 
         mentirBtt.setOnClickListener(v -> {
@@ -152,6 +161,7 @@ public class GameActivity extends AppCompatActivity {
             selectedCards.clear();
             displayPlayerCards();
             //clearColorFilterRecycler();
+            textGen.setText("Se juega a"+ gameState.numeroJugada);
         });
         ///////////////////////////////////////////////////
 
@@ -186,7 +196,7 @@ public class GameActivity extends AppCompatActivity {
         recyclerView.setAdapter(cardAdapter);
         //recyclerView.setEnabled(false);
 
-        cardAdapterOp1 = new CardAdapterOp(player2.getPlayerCards(), getApplicationContext(), this);
+        cardAdapterOp1 = new CardAdapterOpLateral(player2.getPlayerCards(), getApplicationContext(), this);
         recyclerViewOp1.setAdapter(cardAdapterOp1);
         recyclerViewOp1.setEnabled(false);
 
@@ -194,32 +204,13 @@ public class GameActivity extends AppCompatActivity {
         recyclerViewOp2.setAdapter(cardAdapterOp2);
         recyclerViewOp2.setEnabled(false);
 
-        cardAdapterOp3 = new CardAdapterOp(player4.getPlayerCards(), getApplicationContext(), this);
+        cardAdapterOp3 = new CardAdapterOpLateral(player4.getPlayerCards(), getApplicationContext(), this);
         recyclerViewOp3.setAdapter(cardAdapterOp3);
         recyclerViewOp3.setEnabled(false);
         displayPlayerCards();
 
 
         gameState.startGame();
-    }
-
-    void clearColorFilterRecycler() {
-        for (int i=0; i<cardAdapter.getItemCount();i++){
-            cardAdapter.getItemId(i);
-            Log.i("CLEARCOLORRECYCLER", "Se ha realizado una operación" + cardAdapter.getItemId(i));
-
-
-        }
-        /*for (int i = 0; i < recyclerView.getChildCount(); i++) { //recorremos todos los elementos del recycler para quitar el colorfilter
-
-            View view = recyclerView.getChildAt(i);
-            if (view instanceof LinearLayout) {
-                LinearLayout ly = (LinearLayout) view;
-                ImageView cv = (ImageView) ly.getChildAt(0);
-                cv.clearColorFilter();
-            }
-            Log.i("CLEARCOLORRECYCLER", "Se ha limpiado el filtro de:" + recyclerView.getChildAt(i));
-        }*/
     }
 
     @SuppressLint("DiscouragedApi")
