@@ -1,9 +1,14 @@
 package com.example.mentiroso_final.game;
-/*********************************************************************** IMPORTANTE LEER LINEAS 212 Y 213 ***********************************************************/
+
 import android.util.Log;
 
 import com.example.mentiroso_final.GameActivity;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,8 +17,16 @@ public class Player {
     ArrayList<Card> cartasJugadas = new ArrayList<>();
     ArrayList<Card> playerCards = new ArrayList<>();
     ArrayList<Card> remainingCards = new ArrayList<>();
+    ArrayList<Integer> cartasDescartadas = new ArrayList<>();
     private GameActivity gameActivity;
     public int numeroJugada;
+    private String archivoDesconfianza2 = "matrizDesconfianza2.txt";
+    private String archivoDesconfianza3 = "matrizDesconfianza3.txt";
+    private String archivoDesconfianza4 = "matrizDesconfianza4.txt";
+
+    private String archivoIA2 = "estado2.txt";
+    private String archivoIA3 = "estado3.txt";
+    private String archivoIA4 = "estado4.txt";
     Game gameState;
 
     int score = 0;
@@ -49,7 +62,7 @@ public class Player {
     String tMyId;
     boolean acusei;
 
-    float[][] MatrizDeDesconfianza = { { (float) 0.333, (float) 0.333, (float) 0.333 },
+    private float[][] MatrizDeDesconfianza = { { (float) 0.333, (float) 0.333, (float) 0.333 },
             { (float) 0.333, (float) 0.333, (float) 0.333 },
             { (float) 0.333, (float) 0.333, (float) 0.333 },
             { (float) 0.333, (float) 0.333, (float) 0.333 },
@@ -75,7 +88,7 @@ public class Player {
     int cartasXogadorAnterior;
     int behaviour; // Comportamento que terá na ronda
 
-    public ArrayList<String> jugada;   //Variable global para acceder desde main
+    public ArrayList<Card> jugada;   //Variable global para acceder desde main
 
     // Parametros learning
     float learningRate = (float) 0.6;
@@ -114,7 +127,8 @@ public class Player {
 
     public void setPlayerCards(ArrayList<Card> cards) {
         this.playerCards = cards;
-
+        initializeState();
+        MatrizDeDesconfianza=leerDesconfianza(archivoDesconfianza2);
     }
 
     public void setRemainingCards(ArrayList<Card> cards) {
@@ -135,56 +149,37 @@ public class Player {
     }
     public void setNumeroJugadorAnterior(int numCartasJugadorAnterior) { this.numCartasJugadorAnterior = numCartasJugadorAnterior; }
 
-    public void comprobarDescarte(){
+    public int comprobarDescarte(){
         List<Card> descartadas = new ArrayList<>();
 
-        for (int x=0; x<playerCards.size(); x++) {
+        for (int x=0; x<this.playerCards.size(); x++) {
             int contador = 0;
-            for (int i=0; i<playerCards.size(); i++) {
-                if (playerCards.get(i).getValue() == playerCards.get(x).getValue()) {
+            for (int i=0; i<this.playerCards.size(); i++) {
+                if (this.playerCards.get(i).getValue() == this.playerCards.get(x).getValue()) {
                     contador++;
                 }
             }
             if (contador == 4) {
-                descartadas.add(playerCards.get(x));
+                descartadas.add(this.playerCards.get(x));
                 Log.i("Contador", "contador a 4");
-
             }
         }
 
         if(descartadas.size() == 4){
             Log.i("DESCARTE", "SE DESCARTAN: " + descartadas.get(0).getValue() + " DE " + id);
-        }
-        playerCards.removeAll(descartadas);
-
-    }
-    public void play(){
-        ArrayList<Card> jugada = new ArrayList<>();
-        if(gameState.tableCards.size() != 0){   //Si es distinto de cero, ya hay cartas en la mesa
-            for(int i = 0; i < playerCards.size(); i++){
-                Log.i("CARTAS QUE TIENE LA IA", Integer.toString(playerCards.get(i).getValue()));
-                if(playerCards.get(i).getValue() == numeroJugada){
-                    jugada.add(this.playerCards.get(i));
-                }
-            }
-        }else { //Empieza jugando
-            jugada.add(playerCards.get(0));
-        }
-
-        if(jugada.size() == 0){
-            gameState.levantarCarta();
-
+            this.playerCards.removeAll(descartadas);
+            return descartadas.get(0).getValue();
         }else {
-            //if jugada solo tiene verdades (si todas jugada.get(i).getValue() == numJugada) { gameState.echarCarta(jugada, this) } else { estas echando mentira}
+            return 0;
         }
-
-        gameState.echarCarta(jugada, this);
-        gameActivity.displayPlayerCards();
     }
 
+    public void setCartasDescartadas(ArrayList<Integer> descartes){
+        this.cartasDescartadas = descartes;
+    }
     public void juegaIA(){
 
-        ArrayList<Card> jugada = new ArrayList<>();
+        jugada = new ArrayList<>();
 
         numVerdades = numVerdadesTengo(playerCards);
 
@@ -228,9 +223,6 @@ public class Player {
         jugadasRonda[interador] = behaviour;
         interador++;
 
-
-        //Queda que la IA decide si levanta o no y se llamen a las funciones de la clase Game (revisar de linea 165 a 170 de esta clase)
-        //Queda ver la comprobacion de cuando se gana
         switch (behaviour) {
 
             case 0:
@@ -289,6 +281,7 @@ public class Player {
     public void desconfie(int refuerzo) {
         //Pedrito pedrito que ostias es acusei y por que va aqui: if(acusei && numCartas<8){
         reinforceDesconfianza(gameState.tableCards.size(), cartasJugadas.size(), refuerzo);
+        escribirDesconfianza(MatrizDeDesconfianza,archivoDesconfianza2);
     }
 
     public void seLaLevantan() {
@@ -296,13 +289,14 @@ public class Player {
             vReinforceActionAutomata(estadosRonda.get(i).sState, 0, jugadasRonda[i], learningRate);
         }
         estadosRonda.clear();
+        Log.i("DEBERIA ESCRIBIR", "DEBERIA ESCRIBIR DESDE IA " + id);
+        escribir(oVStateActions);
         indices = new int[10];
         jugadasRonda = new int[10];
         interador = 0;
         //Pedrito pedrito que ostias es acusei y por que va aqui: if(acusei && numCartas<8){
         reinforceDesconfianza(gameState.tableCards.size(), cartasJugadas.size(), 1);
     }
-
 
     public int numVerdadesTengo(ArrayList<Card> manoIA) {
         int numVerdades = 0;
@@ -358,42 +352,10 @@ public class Player {
         return posicionMentiras;
     }
 
-    /*public String seleccionarTipoCarta(ArrayList<String> manoIA) {
-        String tipo = "";
-
-        if (behaviour == 3) { // T
-            tipo = manoIA.get(0).substring(0, 1);
-
-        } else if (behaviour == 4) { // TT
-
-            for (int x = 0; x < manoIA.size(); x++) {
-                tipo = manoIA.get(x).substring(0, 1);
-
-                if (numVerdadesTengo(manoIA, tipo) == 2) {
-                    break;
-                }
-            }
-        } else if (behaviour == 5) { // TTT
-
-            for (int x = 0; x < manoIA.size(); x++) {
-                tipo = manoIA.get(x).substring(0, 1);
-
-                if (numVerdadesTengo(manoIA, tipo) == 3) {
-                    break;
-                }
-            }
-
-        }
-
-        // System.out.println(tipo);
-        return tipo;
-    }
-    */
-
     public void vReinforceActionAutomata(String estado, int iNActions, int plays, double learningRate) {
         int indice = 0;
         dFactorLR = learningRate;
-
+        Log.i("REFUERZO", "REFUERZO DESDE IA " + id);
         for(int i = 0; i < oVStateActions.size(); i++){
             if(oVStateActions.get(i).sState.equals(estado)){
                 indice = i;
@@ -431,7 +393,6 @@ public class Player {
                         }
                     }
                 }
-                //escribirDesconfianza();
                 break;
 
             case 0:    //   Fallei
@@ -451,7 +412,6 @@ public class Player {
                     }
                 }
 
-                //escribirDesconfianza();
                 break;
 
             default:
@@ -459,12 +419,161 @@ public class Player {
         }
 
     }
+    private float[][] leerDesconfianza (String archivoMatriz){
 
+        float[][] matriz = { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 },
+                { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 },
+                { 0, 0, 0 }, { 0, 0, 0 } };
 
+        File archivo = new File(gameActivity.getApplicationContext().getFilesDir(), archivoMatriz );
+        try {
+            FileReader fr = new FileReader(archivo);
+            BufferedReader br = new BufferedReader(fr);
+            String[] valor;
+            String linea;
+            int num_fila=0;
+            while((linea=br.readLine())!=null){
+                valor=linea.split(" /");
+                int i=0,j=0;
+                for (i=0;i<9;i++){
+                    matriz[num_fila][i]=Float.parseFloat(valor[i]);
+                }
+                num_fila++;
+            }
+            fr.close();
 
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
 
+        return matriz;
+    }
+    private void escribirDesconfianza(float[][] matriz,String archivoDesconfianza){
+        File archivo = new File(gameActivity.getApplicationContext().getFilesDir(), archivoDesconfianza);
+        try {
+            FileWriter fw = new FileWriter(archivo);
 
+            int i = 0;
+            for (int k = 0; k < 9; k++) {
+                for (i = 0; i < 3; i++) {
+                    fw.write(Float.toString(MatrizDeDesconfianza[k][i]) + " /");
+                }
+                fw.write("\n");
+            }
+            fw.close();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
 
+    };
+    private void escribir(ArrayList<StateAction> actions){
+        String estados = "";
+        try{
+            if(id == 2) {
+                File archivo = new File(gameActivity.getApplicationContext().getFilesDir(), archivoIA2);
+                FileWriter escritor = new FileWriter(archivo);
+                for (int i = 0; i < oVStateActions.size(); i++) {
+                    estados = estados + oVStateActions.get(i).sGetStatePlusActions() + "\n";
+                    Log.i("ESCRIBIENDO", oVStateActions.get(i).sGetStatePlusActions());
+                }
+                escritor.write(estados);
+                escritor.close();
+            }else if (id == 3){
+                File archivo = new File(gameActivity.getApplicationContext().getFilesDir(), archivoIA3);
+                FileWriter escritor = new FileWriter(archivo);
+                for (int i = 0; i < oVStateActions.size(); i++) {
+                    estados = estados + oVStateActions.get(i).sGetStatePlusActions() + "\n";
+                    Log.i("ESCRIBIENDO", oVStateActions.get(i).sGetStatePlusActions());
+                }
+                escritor.write(estados);
+                escritor.close();
+            }else if (id == 4){
+                File archivo = new File(gameActivity.getApplicationContext().getFilesDir(), archivoIA4);
+                FileWriter escritor = new FileWriter(archivo);
+                for (int i = 0; i < oVStateActions.size(); i++) {
+                    estados = estados + oVStateActions.get(i).sGetStatePlusActions() + "\n";
+                    Log.i("ESCRIBIENDO", oVStateActions.get(i).sGetStatePlusActions());
+                }
+                escritor.write(estados);
+                escritor.close();
+            }
+        } catch (Exception e) {
+            Log.i("EXCEPCION", String.valueOf(e));
+        }
+    }
+
+    public void initializeState(){
+        String estado = "";
+        ArrayList<Double> actions = new ArrayList<>();
+        String[] partes;
+        try{
+            if(id == 2) {
+                File archivo = new File(gameActivity.getApplicationContext().getFilesDir(), archivoIA2);
+                FileReader reader = new FileReader(archivo);
+                BufferedReader bufferedReader = new BufferedReader(reader);
+                String linea;
+                StringBuilder contenido = new StringBuilder();
+
+                while ((linea = bufferedReader.readLine()) != null) {
+                    partes = linea.split("\\s+");
+                    estado = partes[0];
+                    for (int i = 1; i < partes.length; i++) {
+                        double numero = Double.parseDouble(partes[i]);
+                        actions.add(numero);
+                    }
+                    oVStateActions.add(new StateAction(estado, actions.size(), actions));
+                }
+                // Imprime el contenido del archivo
+                Log.i("CONTENIDO", oVStateActions.toString());
+                // Cierra el lector
+                reader.close();
+
+            }else if (id == 3){
+                File archivo = new File(gameActivity.getApplicationContext().getFilesDir(), archivoIA3);
+                FileReader reader = new FileReader(archivo);
+                BufferedReader bufferedReader = new BufferedReader(reader);
+                String linea;
+                StringBuilder contenido = new StringBuilder();
+                while ((linea = bufferedReader.readLine()) != null) {
+                    partes = linea.split("\\s+");
+                    estado = partes[0];
+                    for (int i = 1; i < partes.length; i++) {
+                        double numero = Double.parseDouble(partes[i]);
+                        actions.add(numero);
+                    }
+                    oVStateActions.add(new StateAction(estado, actions.size(), actions));
+                }
+                // Imprime el contenido del archivo
+                Log.i("CONTENIDO", oVStateActions.toString());
+                // Cierra el lector
+                reader.close();
+
+            }else if (id == 4){
+                File archivo = new File(gameActivity.getApplicationContext().getFilesDir(), archivoIA4);
+                FileReader reader = new FileReader(archivo);
+                BufferedReader bufferedReader = new BufferedReader(reader);
+                String linea;
+                StringBuilder contenido = new StringBuilder();
+                while ((linea = bufferedReader.readLine()) != null) {
+                    partes = linea.split("\\s+");
+                    estado = partes[0];
+                    for (int i = 1; i < partes.length; i++) {
+                        double numero = Double.parseDouble(partes[i]);
+                        actions.add(numero);
+                    }
+                    oVStateActions.add(new StateAction(estado, actions.size(), actions));
+                }
+                // Imprime el contenido del archivo
+                Log.i("CONTENIDO", oVStateActions.toString());
+                // Cierra el lector
+                reader.close();
+            }
+        } catch (Exception e) {
+            Log.i("EXCEPCION", String.valueOf(e));
+        }
+    }
     public int vGetNewActionAutomata(String sState, int iNActions, double dReward) {
         boolean bFound;
         StateAction oStateProbs;
@@ -515,6 +624,13 @@ public class Player {
                     dValAction[i] = 1.0 / iNActions;
         }
 
+        StateAction(String sAuxState, int iNActions, ArrayList<Double> actions){
+            sState = sAuxState;
+            dValAction = new double[iNActions];
+            for(int i = 0; i < actions.size(); i++){
+                dValAction[i] = actions.get(i);
+            }
+        }
         public String sGetState() {
             return sState;
         }

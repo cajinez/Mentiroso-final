@@ -114,50 +114,46 @@
 
     <TextView
         android:id="@+id/textGen"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TextView"
+        android:layout_width="89dp"
+        android:layout_height="35dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.39"
+        app:layout_constraintHorizontal_bias="0.366"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.392" />
+        app:layout_constraintVertical_bias="0.385" />
 
     <TextView
         android:id="@+id/textOp1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TextView"
+        android:layout_width="86dp"
+        android:layout_height="70dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.769"
+        app:layout_constraintHorizontal_bias="0.762"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.369" />
+        app:layout_constraintVertical_bias="0.351" />
 
     <TextView
         android:id="@+id/textOp2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TextView"
+        android:layout_width="224dp"
+        android:layout_height="21dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.515"
+        app:layout_constraintHorizontal_bias="0.499"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.27" />
+        app:layout_constraintVertical_bias="0.264" />
 
     <TextView
         android:id="@+id/textOp3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TextView"
+        android:layout_width="81dp"
+        android:layout_height="84dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.196"
+        app:layout_constraintHorizontal_bias="0.212"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.369" />
+        app:layout_constraintVertical_bias="0.324" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

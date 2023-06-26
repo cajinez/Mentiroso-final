@@ -54,7 +54,10 @@ public class GameActivity extends AppCompatActivity {
     Game gameState;
     private int valorSpinner;
     public AlertDialog.Builder builder;
-    TextView textOp1, textOp2, textOp3, textGen;
+    public TextView textOp1;
+    public TextView textOp2;
+    public TextView textOp3;
+    public TextView textGen;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -150,7 +153,6 @@ public class GameActivity extends AppCompatActivity {
             displayPlayerCards();
             //habria que deshabilitar el recycler view pero con esto creo que llega
             //clearColorFilterRecycler();
-            textGen.setText("Se juega a "+ gameState.numeroJugada);
         });
 
         mentirBtt.setOnClickListener(v -> {
@@ -161,7 +163,6 @@ public class GameActivity extends AppCompatActivity {
             selectedCards.clear();
             displayPlayerCards();
             //clearColorFilterRecycler();
-            textGen.setText("Se juega a "+ gameState.numeroJugada);
         });
         ///////////////////////////////////////////////////
 

@@ -29,8 +29,11 @@ public class Game {
     public int currentPlayer;
     private GameActivity gameActivity;
 
+    private Player winner;
     private CountDownLatch latch;
     private GameTask gameTask;
+    int tamañoLevantar=0;
+
 
     public Game(ArrayList<Card> deck, GameActivity gameActivity){
         this.deck = deck;
@@ -59,6 +62,28 @@ public class Game {
         if (currentPlayer != 1) {
             Log.i("LE TOCA A EN PLAYTURN", Integer.toString(currentPlayer));
             players.get(currentPlayer - 1).juegaIA();
+
+            if (currentPlayer==2){
+                if (player2.jugada.size()==0){
+                    if (fueMentira) gameActivity.textOp1.setText("He levantado y era mentira, el jugador 1 se lleva " + tamañoLevantar);
+                    else gameActivity.textOp1.setText("He levantado y era verdad, ,me llevo " + tamañoLevantar);
+                }
+                else gameActivity.textOp1.setText("He jugado " + player2.jugada.size() + " de "+ numeroJugada);
+            }
+            if (currentPlayer==3){
+                if (player3.jugada.size()==0){
+                    if (fueMentira) gameActivity.textOp2.setText("He levantado y era mentira, el jugador 2 se lle va " + tamañoLevantar);
+                    else gameActivity.textOp2.setText("He levantado y era verdad, ,me llevo " + tamañoLevantar);
+                }
+                else gameActivity.textOp2.setText("He jugado " + player3.jugada.size() + " de "+ numeroJugada);
+            }
+            if (currentPlayer==4){
+                if (player4.jugada.size()==0){
+                    if (fueMentira) gameActivity.textOp3.setText("He levantado y era mentira, el jugador 3 se lleva " + tamañoLevantar);
+                    else gameActivity.textOp3.setText("He levantado y era verdad, ,me llevo " + tamañoLevantar);
+                }
+                else gameActivity.textOp3.setText("He jugado " + player4.jugada.size() + " de "+ numeroJugada);
+            }
 
         }
     }
@@ -108,6 +133,7 @@ public class Game {
         Log.i("SE JUEGA A ", String.valueOf(numeroJugada));
         Log.i("CARTAS JUGADAS", cartasJugadas);
         Log.i("CARTAS EN LA MESA", tableCards.toString());
+        gameActivity.textGen.setText("Se juega a "+ numeroJugada);
         latch.countDown();
     }
     public void mentir(ArrayList<Card> cards, Player player, int valorMentira){
@@ -143,6 +169,7 @@ public class Game {
         Log.i("CARTAS JUGADAS", cartasJugadas);
         Log.i("CARTAS EN LA MESA", tableCards.toString());
         this.fueMentira=true;
+        gameActivity.textGen.setText("Se juega a "+ numeroJugada);
         latch.countDown();
     }
     /*
@@ -155,7 +182,7 @@ public class Game {
         player3.setNumeroJugada(0);
         player4.setNumeroJugada(0);
         numeroJugada = 0;
-
+        Log.i("MENTIRA?", Boolean.toString(fueMentira));
         player2.setNumeroJugadorAnterior(0);
         player3.setNumeroJugadorAnterior(0);
         player4.setNumeroJugadorAnterior(0);
@@ -164,47 +191,60 @@ public class Game {
             for(int i = 0; i < tableCards.size(); i++){
                 if(currentPlayer == 1){
                     player4.playerCards.add(tableCards.get(i));
-                    player2.seLaLevantan();
-                    player3.seLaLevantan();
+
                 }else if(currentPlayer == 2){
                     player1.playerCards.add(tableCards.get(i));
-                    player2.desconfie(1);
-                    player3.seLaLevantan();
-                    player4.seLaLevantan();
+
                 }else if(currentPlayer == 3){
                     player2.playerCards.add(tableCards.get(i));
-                    player3.desconfie(1);
-                    player4.seLaLevantan();
+
                 }else if(currentPlayer == 4){
                     player3.playerCards.add(tableCards.get(i));
-                    player2.seLaLevantan();
-                    player4.desconfie(1);
+
                 }
+            }
+            if(currentPlayer == 1){
+                player2.seLaLevantan();
+                player3.seLaLevantan();
+            }else if(currentPlayer == 2){
+                player2.desconfie(1);
+                player3.seLaLevantan();
+                player4.seLaLevantan();
+            }else if(currentPlayer == 3){
+                player3.desconfie(1);
+                player4.seLaLevantan();
+            }else if(currentPlayer == 4){
+                player2.seLaLevantan();
+                player4.desconfie(1);
             }
         }else {
             for(int i = 0; i < tableCards.size(); i++){
                 if (currentPlayer == 1) {
-                    Log.i("Chupa el 1", "maricona");
                     player1.playerCards.add(tableCards.get(i));
-                    player2.seLaLevantan();
-                    player3.seLaLevantan();
-                    player4.seLaLevantan();
                 }else if (currentPlayer == 2) {
                     player2.playerCards.add(tableCards.get(i));
-                    player2.desconfie(0);
-                    player3.seLaLevantan();
-                    player4.seLaLevantan();
                 }else if (currentPlayer == 3) {
                     player3.playerCards.add(tableCards.get(i));
-                    player2.seLaLevantan();
-                    player3.desconfie(0);
-                    player4.seLaLevantan();
                 }else if (currentPlayer == 4) {
                     player4.playerCards.add(tableCards.get(i));
-                    player2.seLaLevantan();
-                    player3.seLaLevantan();
-                    player4.desconfie(0);
                 }
+            }
+            if (currentPlayer == 1) {
+                player2.seLaLevantan();
+                player3.seLaLevantan();
+                player4.seLaLevantan();
+            }else if (currentPlayer == 2) {
+                player2.desconfie(0);
+                player3.seLaLevantan();
+                player4.seLaLevantan();
+            }else if (currentPlayer == 3) {
+                player2.seLaLevantan();
+                player3.desconfie(0);
+                player4.seLaLevantan();
+            }else if (currentPlayer == 4) {
+                player2.seLaLevantan();
+                player3.seLaLevantan();
+                player4.desconfie(0);
             }
         }
 
@@ -212,8 +252,9 @@ public class Game {
             cartasMesa = cartasMesa + tableCards.get(i).getValue() + " de " + tableCards.get(i).getSuit() + "\n";
         }
         Log.i("CARTAS LEVANTADAS", cartasMesa);
-
+        tamañoLevantar=tableCards.size();
         tableCards.clear();
+        gameActivity.textGen.setText("");
         latch.countDown();
     }
 
@@ -223,8 +264,42 @@ public class Game {
     //de la ia 2, si cuando es el turno de la ia 3 el juagdor 1 tiene 0 cartas, gana el jugador 1
     // ó
     //si un jugador levanta y con las cartas que chupa descarta y se queda con 0, gana
-    public Boolean isOver(){
+    public Boolean isOver(Boolean descartoYGano, Player player){
         Boolean isOver = false;
+
+        if(descartoYGano){
+            isOver = true;
+            winner = player;
+        }else {
+            //turno persona
+            if(currentPlayer == 1){
+                if(player3.getPlayerCards().size() == 0){
+                    isOver = true;
+                    winner = player3;
+                }
+            }
+            if(currentPlayer == 2){
+                if(player4.getPlayerCards().size() == 0){
+                    isOver = true;
+                    winner = player4;
+                }
+            }
+            if(currentPlayer == 3){
+                if(player1.getPlayerCards().size() == 0){
+                    isOver = true;
+                    winner = player1;
+                }
+            }
+            if(currentPlayer == 4){
+                if(player2.getPlayerCards().size() == 0){
+                    isOver = true;
+                    winner = player2;
+                }
+            }
+        }
+        if(isOver){
+            Log.i("GANADOR", "GANO " + winner.getId());
+        }
         return isOver;
     }
     // Método para reiniciar el latch
@@ -235,7 +310,7 @@ public class Game {
     private class GameTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... voids) {
-            while(!isOver()){
+            while(!isOver(false, player1)){ //aquí false y player1 no hace nada, se mete xq necesitamos mandarle que jugador gana por descarte, pero al mandarle un false no hace nada
                 playTurn();
                 try {
                     latch.await();
