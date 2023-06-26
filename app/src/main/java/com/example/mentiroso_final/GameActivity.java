@@ -150,7 +150,7 @@ public class GameActivity extends AppCompatActivity {
             displayPlayerCards();
             //habria que deshabilitar el recycler view pero con esto creo que llega
             //clearColorFilterRecycler();
-            textGen.setText("Se juega a"+ gameState.numeroJugada);
+            textGen.setText("Se juega a "+ gameState.numeroJugada);
         });
 
         mentirBtt.setOnClickListener(v -> {
@@ -161,7 +161,7 @@ public class GameActivity extends AppCompatActivity {
             selectedCards.clear();
             displayPlayerCards();
             //clearColorFilterRecycler();
-            textGen.setText("Se juega a"+ gameState.numeroJugada);
+            textGen.setText("Se juega a "+ gameState.numeroJugada);
         });
         ///////////////////////////////////////////////////
 
