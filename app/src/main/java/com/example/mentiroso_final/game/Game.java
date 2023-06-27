@@ -2,6 +2,7 @@ package com.example.mentiroso_final.game;
 
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.mentiroso_final.GameActivity;
 
@@ -29,10 +30,10 @@ public class Game {
     public int currentPlayer;
     private GameActivity gameActivity;
 
-    private Player winner;
+    public Player winner;
     private CountDownLatch latch;
     private GameTask gameTask;
-    int tamañoLevantar=0;
+    public int tamañoLevantar=0;
 
 
     public Game(ArrayList<Card> deck, GameActivity gameActivity){
@@ -297,7 +298,9 @@ public class Game {
                 }
             }
         }
+        this.gameOver = isOver;
         if(isOver){
+            gameActivity.displayPlayerCards();
             Log.i("GANADOR", "GANO " + winner.getId());
         }
         return isOver;
@@ -321,6 +324,7 @@ public class Game {
 
                 nextPlayer();
             }
+
             return null;
         }
     }

@@ -2,6 +2,7 @@ package com.example.mentiroso_final;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -58,6 +60,7 @@ public class GameActivity extends AppCompatActivity {
     public TextView textOp2;
     public TextView textOp3;
     public TextView textGen;
+    public Toast toast;
 
     @SuppressLint("MissingInflatedId")
     @Override
@@ -141,6 +144,9 @@ public class GameActivity extends AppCompatActivity {
             player4.comprobarDescarte();
             displayPlayerCards();
             levantarBtt.setEnabled(false);
+            if (gameState.fueMentira) toast = Toast.makeText(this, "Era mentira! El jugador 4 se lleva "+gameState.tamañoLevantar, Toast.LENGTH_SHORT);
+            else toast = Toast.makeText(this, "Era verdad! Te llevas "+gameState.tamañoLevantar, Toast.LENGTH_SHORT);
+            toast.show();
         });
 
         echarBtt.setOnClickListener(v -> {
@@ -276,6 +282,12 @@ public class GameActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                if (gameState.gameOver){
+                    Intent intent = new Intent(getApplicationContext(), EndActivity.class);
+                    intent.putExtra("winner" , gameState.winner.getId());
+                    startActivity(intent);
+                }
+
                 if (turn && gameState.tableCards.size() != 0) levantarBtt.setEnabled(true);
                 cardAdapter.notifyDataSetChanged(); //notificamos que ha cambiado el conjunto de datos del recycler
                 cardAdapterOp1.notifyDataSetChanged();
@@ -351,6 +363,7 @@ public class GameActivity extends AppCompatActivity {
      * Habilita botones para que el jugador pueda tirar/levantar al ser su turno
      */
     public void setTurnTrue() {
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -360,6 +373,8 @@ public class GameActivity extends AppCompatActivity {
 
                 if (gameState.tableCards.size() != 0) levantarBtt.setEnabled(true);
                 else levantarBtt.setEnabled(false);
+                toast = Toast.makeText(getApplicationContext(), "Es tu turno!", Toast.LENGTH_SHORT);
+                toast.show();
             }
         });
     }
