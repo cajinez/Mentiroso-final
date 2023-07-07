@@ -281,7 +281,7 @@ public class Player {
     public void desconfie(int refuerzo) {
         //Pedrito pedrito que ostias es acusei y por que va aqui: if(acusei && numCartas<8){
         reinforceDesconfianza(gameState.tableCards.size(), cartasJugadas.size(), refuerzo);
-        escribirDesconfianza(MatrizDeDesconfianza,archivoDesconfianza2);
+        escribirDesconfianza();
     }
 
     public void seLaLevantan() {
@@ -290,11 +290,10 @@ public class Player {
         }
         estadosRonda.clear();
         Log.i("DEBERIA ESCRIBIR", "DEBERIA ESCRIBIR DESDE IA " + id);
-        escribir(oVStateActions);
+      //  escribir();
         indices = new int[10];
         jugadasRonda = new int[10];
         interador = 0;
-        //Pedrito pedrito que ostias es acusei y por que va aqui: if(acusei && numCartas<8){
         reinforceDesconfianza(gameState.tableCards.size(), cartasJugadas.size(), 1);
     }
 
@@ -419,7 +418,7 @@ public class Player {
         }
 
     }
-    private float[][] leerDesconfianza (String archivoMatriz){
+    public float[][] leerDesconfianza (String archivoMatriz){
 
         float[][] matriz = { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 },
                 { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 },
@@ -449,7 +448,24 @@ public class Player {
 
         return matriz;
     }
-    private void escribirDesconfianza(float[][] matriz,String archivoDesconfianza){
+    //private void escribirDesconfianza(float[][] matriz,String archivoDesconfianza){
+    public void escribirDesconfianza(){
+    String archivoDesconfianza="";
+        switch(id){
+            case 2:
+                archivoDesconfianza=archivoDesconfianza2;
+                break;
+            case 3:
+                archivoDesconfianza=archivoDesconfianza3;
+                break;
+            case 4:
+                archivoDesconfianza=archivoDesconfianza4;
+                break;
+        }
+
+
+
+
         File archivo = new File(gameActivity.getApplicationContext().getFilesDir(), archivoDesconfianza);
         try {
             FileWriter fw = new FileWriter(archivo);
@@ -468,7 +484,7 @@ public class Player {
         }
 
     };
-    private void escribir(ArrayList<StateAction> actions){
+    public void escribir(){
         String estados = "";
         try{
             if(id == 2) {

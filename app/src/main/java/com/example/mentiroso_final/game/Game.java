@@ -300,6 +300,13 @@ public class Game {
         }
         this.gameOver = isOver;
         if(isOver){
+            player2.escribirDesconfianza();
+            player2.escribir();
+            player3.escribirDesconfianza();
+            player3.escribir();
+            player4.escribirDesconfianza();
+            player4.escribir();
+
             gameActivity.displayPlayerCards();
             Log.i("GANADOR", "GANO " + winner.getId());
         }
