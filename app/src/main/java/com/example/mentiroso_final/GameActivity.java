@@ -1,7 +1,6 @@
 package com.example.mentiroso_final;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -12,7 +11,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,17 +29,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class GameActivity extends AppCompatActivity {
-    Boolean DEBUG = false;
     Boolean turn = true;
-
-    ArrayList<ImageView> cardViews = new ArrayList<>();
-    ArrayList<ImageView> opCardViews = new ArrayList<>();
-    ArrayList<ImageView> flippedCardsView = new ArrayList<>();
     ArrayList<Card> allCards; //todas
     ArrayList<Card> selectedCards = new ArrayList<>();
     static ArrayList<Card> cardsDeck = new ArrayList<>(); //as do mazo (eliminar ao acabar)
 
-    ImageView deck, imgTableCard;
+    ImageView imgTableCard;
     Button echarBtt, mentirBtt, levantarBtt;
 
     public Player player1 = new Player(1, this);
@@ -55,7 +48,6 @@ public class GameActivity extends AppCompatActivity {
     RecyclerView recyclerView, recyclerViewOp1, recyclerViewOp2, recyclerViewOp3;
     Game gameState;
     private int valorSpinner;
-    public AlertDialog.Builder builder;
     public TextView textOp1;
     public TextView textOp2;
     public TextView textOp3;
@@ -99,19 +91,6 @@ public class GameActivity extends AppCompatActivity {
         recyclerViewOp3 = findViewById(R.id.recyclerViewOp3);
         recyclerViewOp3.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
-        builder = new AlertDialog.Builder(getApplicationContext());
-
-        builder.setTitle("Título del diálogo")
-                .setMessage("Mensaje del diálogo")
-                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Acciones a realizar cuando se presiona el botón "Aceptar"
-                        dialog.dismiss(); // Cierra el diálogo
-                    }
-                });
-
-        AlertDialog alertDialog = builder.create();
 
         textOp1 = findViewById(R.id.textOp1);
         textOp2 = findViewById(R.id.textOp2);
@@ -125,8 +104,8 @@ public class GameActivity extends AppCompatActivity {
          */
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-                Object item = parent.getItemAtPosition(pos);
-                String textSpinner = spinner.getSelectedItem().toString();
+                //Object item = parent.getItemAtPosition(pos);
+                //String textSpinner = spinner.getSelectedItem().toString();
                 valorSpinner = Integer.parseInt((String) spinner.getSelectedItem());
             }
 
@@ -138,10 +117,27 @@ public class GameActivity extends AppCompatActivity {
         levantarBtt.setOnClickListener(v -> {
             turn = false;
             gameState.levantarCarta();
-            player1.comprobarDescarte();
-            player2.comprobarDescarte();
-            player3.comprobarDescarte();
-            player4.comprobarDescarte();
+            int numero;
+            numero = player1.comprobarDescarte();
+            if(numero != 0) {
+                toast = Toast.makeText(this,"Se han descartado los "+numero+" del jugador 1", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+            numero = player2.comprobarDescarte();
+            if(numero != 0){
+                toast = Toast.makeText(this,"Se han descartado los "+numero+" del jugador 2", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+            numero = player3.comprobarDescarte();
+            if(numero != 0){
+                toast = Toast.makeText(this,"Se han descartado los "+numero+" del jugador 3", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+            numero = player4.comprobarDescarte();
+            if(numero != 0){
+                toast = Toast.makeText(this,"Se han descartado los "+numero+" del jugador 4", Toast.LENGTH_SHORT);
+                toast.show();
+            }
             displayPlayerCards();
             levantarBtt.setEnabled(false);
             if (gameState.fueMentira) toast = Toast.makeText(this, "Era mentira! El jugador 4 se lleva "+gameState.tamañoLevantar, Toast.LENGTH_SHORT);
@@ -157,8 +153,6 @@ public class GameActivity extends AppCompatActivity {
             gameState.echarCarta(selectedCards, player1);
             selectedCards.clear();
             displayPlayerCards();
-            //habria que deshabilitar el recycler view pero con esto creo que llega
-            //clearColorFilterRecycler();
         });
 
         mentirBtt.setOnClickListener(v -> {
@@ -185,10 +179,27 @@ public class GameActivity extends AppCompatActivity {
         distributeCards();
 
         //comprobamos si un jugador tiene que descartar
-        player1.comprobarDescarte();
-        player2.comprobarDescarte();
-        player3.comprobarDescarte();
-        player4.comprobarDescarte();
+        int numero;
+        numero = player1.comprobarDescarte();
+        if(numero != 0){
+            toast = Toast.makeText(this,"Se han descartado los "+numero+" del jugador 1", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+        numero = player2.comprobarDescarte();
+        if(numero != 0){
+            toast = Toast.makeText(this,"Se han descartado los "+numero+" del jugador 2", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+        numero = player3.comprobarDescarte();
+        if(numero != 0){
+            toast = Toast.makeText(this,"Se han descartado los "+numero+" del jugador 3", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+        numero = player4.comprobarDescarte();
+        if(numero != 0){
+            toast = Toast.makeText(this,"Se han descartado los "+numero+" del jugador 4", Toast.LENGTH_SHORT);
+            toast.show();
+        }
 
         gameState = new Game(cardsDeck, this);
         gameState.allCards = new ArrayList<>(this.allCards);
@@ -379,15 +390,4 @@ public class GameActivity extends AppCompatActivity {
         });
     }
 
-    public  void showBuilderLevantar(String msg){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                builder.setTitle("Cartas levantadas")
-                        .setMessage(msg);
-                AlertDialog alertDialog = builder.create();
-                alertDialog.show();
-            }
-        });
-    }
 }

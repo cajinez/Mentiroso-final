@@ -1,7 +1,6 @@
 package com.example.mentiroso_final.game;
-import java.util.Comparator;
 
-public class Card implements Comparable<Card> {
+public class Card  {
     int suit;
     int value;
     int imageId;
@@ -21,8 +20,5 @@ public class Card implements Comparable<Card> {
     }
     public int getSuit() { return suit; }
 
-    @Override
-    public int compareTo(Card o) {
-        return Integer.compare(this.value, o.value);
-    }
+
 }

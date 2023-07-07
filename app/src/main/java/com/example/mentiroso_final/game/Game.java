@@ -14,7 +14,6 @@ public class Game {
     public ArrayList<Card> allCards;
     public ArrayList<Card> deck;
     public ArrayList<Card> tableCards = new ArrayList<>();
-    public ArrayList<Card> discardCards;
 
     public boolean personaYaHaJugado = false;
     //private ArrayList<Player> IAs = new ArrayList<>();

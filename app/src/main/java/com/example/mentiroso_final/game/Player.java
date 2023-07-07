@@ -8,7 +8,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -129,10 +128,6 @@ public class Player {
         this.playerCards = cards;
         initializeState();
         MatrizDeDesconfianza=leerDesconfianza(archivoDesconfianza2);
-    }
-
-    public void setRemainingCards(ArrayList<Card> cards) {
-        this.remainingCards = new ArrayList<>(cards);
     }
 
     public void setGameState(Game gameState){
