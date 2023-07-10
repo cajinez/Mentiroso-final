@@ -6,9 +6,12 @@ import com.example.mentiroso_final.GameActivity;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Player {
@@ -19,9 +22,9 @@ public class Player {
     ArrayList<Integer> cartasDescartadas = new ArrayList<>();
     private GameActivity gameActivity;
     public int numeroJugada;
-    private String archivoDesconfianza2 = "matrizDesconfianza2.txt";
-    private String archivoDesconfianza3 = "matrizDesconfianza3.txt";
-    private String archivoDesconfianza4 = "matrizDesconfianza4.txt";
+    private String archivoDesconfianza2 = "matrizDesconfianza2.txt";   //cambiado o final
+    private  String archivoDesconfianza3 = "matrizDesconfianza3.txt";
+    private  String archivoDesconfianza4 = "matrizDesconfianza4.txt";
 
     private String archivoIA2 = "estado2.txt";
     private String archivoIA3 = "estado3.txt";
@@ -61,7 +64,14 @@ public class Player {
     String tMyId;
     boolean acusei;
 
+    int valormentira=0;
+    boolean melevantaronanteriorronda=false;
+
+    private float[] cantarMentiras={(float)0.4,(float)0.4,(float)0.4,(float)0.4,(float)0.4,(float)0.4,(float)0.4,(float)0.4,(float)0.4,(float)0.4};
     private float[][] MatrizDeDesconfianza = { { (float) 0.333, (float) 0.333, (float) 0.333 },
+            { (float) 0.333, (float) 0.333, (float) 0.333 },
+            { (float) 0.333, (float) 0.333, (float) 0.333 },
+            { (float) 0.333, (float) 0.333, (float) 0.333 },
             { (float) 0.333, (float) 0.333, (float) 0.333 },
             { (float) 0.333, (float) 0.333, (float) 0.333 },
             { (float) 0.333, (float) 0.333, (float) 0.333 },
@@ -82,7 +92,7 @@ public class Player {
     float tresholdDesconfianza = (float) 0.8;
     float tresholdAllL = (float) 0.8;
 
-    double desconfianza = Math.random();
+    double desconfianza = 0.4*Math.random()+0.15;
 
     int cartasXogadorAnterior;
     int behaviour; // Comportamento que terá na ronda
@@ -127,7 +137,25 @@ public class Player {
     public void setPlayerCards(ArrayList<Card> cards) {
         this.playerCards = cards;
         initializeState();
-        MatrizDeDesconfianza=leerDesconfianza(archivoDesconfianza2);
+        String archivoDesconfianza="";
+        String archivoMentiras="";
+        switch(id){
+            case 2:
+                archivoDesconfianza=archivoDesconfianza3;
+                archivoMentiras="archivoMentiras2.txt";
+                break;
+            case 3:
+                archivoDesconfianza=archivoDesconfianza3;
+                archivoMentiras="archivoMentiras3.txt";
+
+                break;
+            case 4:
+                archivoDesconfianza=archivoDesconfianza3;
+                archivoMentiras="archivoMentiras4.txt";
+                break;
+        }
+        MatrizDeDesconfianza=leerDesconfianza(archivoDesconfianza);
+        leerMentiras(archivoMentiras);
     }
 
     public void setGameState(Game gameState){
@@ -259,8 +287,26 @@ public class Player {
         }
 
         if(behaviour == 0 || behaviour == 1 || behaviour == 2) {
+
+
             if(gameState.tableCards.size() == 0) {
-                gameState.mentir(jugada, this, 1);
+                 valormentira=selecionarValorMentira(playerCards);
+                 int valorCantar=valormentira;
+                 switch (valormentira){
+                     case 8:
+                         valorCantar=10;
+                         break;
+                     case 9:
+                         valorCantar=11;
+                         break;
+                     case 10:
+                         valorCantar=12;
+                         break;
+                     default:
+                         break;
+                 }
+
+                gameState.mentir(jugada, this, valorCantar);
 
             }else {
                 gameState.mentir(jugada, this, 4);
@@ -289,7 +335,13 @@ public class Player {
         indices = new int[10];
         jugadasRonda = new int[10];
         interador = 0;
-        reinforceDesconfianza(gameState.tableCards.size(), cartasJugadas.size(), 1);
+        reinforceDesconfianza(gameState.tableCards.size(), cartasJugadas.size(), 0); //estsba a 1 e creo que era erro
+
+    //    Log.i("Escribe en Cantar Mentiras",String.valueOf(valormentira));
+        reinforceMentiras(true, valormentira);
+        escribirCantarMentiras();
+        melevantaronanteriorronda=true;
+        
     }
 
     public int numVerdadesTengo(ArrayList<Card> manoIA) {
@@ -317,6 +369,32 @@ public class Player {
         }
 
         return posicionVerdades;
+    }
+
+
+    public int selecionarValorMentira(ArrayList<Card> manoIA){
+        int contador=0;
+        int cont2=0;
+        int valorMentira=0;
+        float[] posiblesMentiras=cantarMentiras;
+      //  Collections.shuffle(manoIA);
+        for (int i=0;i<cantarMentiras.length;i++){
+            if(manoIA.isEmpty()){
+                return 0;
+            }
+            float factor =(float) (Math.random()*0.5); //Para crear un num aleatorio distinto cada vez
+            posiblesMentiras[i]=factor+posiblesMentiras[i];
+        }
+        float max=0;
+        for (int k = 0; k < posiblesMentiras.length; k++) {
+            if(max<posiblesMentiras[k]){
+                max=posiblesMentiras[k];
+           //     Log.i("VALOR MENTIRA",String.valueOf(max));
+                valorMentira=k+1;      //porque a posicion 3 corresponde a carta 4
+            }
+        }
+
+        return valorMentira;
     }
 
     public ArrayList<Card> seleccionarMentiras(ArrayList<Card> manoIA, String tipoCarta, int numMentiras, int behaviour) {
@@ -365,23 +443,67 @@ public class Player {
             }
         }
     }
+    public void reinforceMentiras(boolean melevantaron,int seleccion){
+        double RD_increase=0.4;
+        double RD_decrease=0.2;
+        if(melevantaron){
+            for (int i = 0; i < cantarMentiras.length; i++) {
+                if ((seleccion-1)==cantarMentiras[i]) {
+                   // cantarMentiras[i]=cantarMentiras[i]*(float)RD_decrease;
+                    cantarMentiras[i]-=cantarMentiras[i]*(float)RD_decrease/16;
+                }
+                else{
+                    cantarMentiras[i]+=cantarMentiras[i]*(float)RD_increase/16;
+                }
+             //   Log.i("ReinforceMentira","Valor post-reforzo=" +(cantarMentiras[i]));
+                if(cantarMentiras[i]>(float)0.85){
+                    cantarMentiras[i]=(float)0.35;
+                }
+                if(cantarMentiras[i]<(float)0.05){
+                    cantarMentiras[i]=(float)0.2;
 
+                }
+            }
+        }
+        else{
+            for (int i = 0; i < cantarMentiras.length; i++) {
+                if ((seleccion-1)==cantarMentiras[i]) {
+                    //cantarMentiras[i]=cantarMentiras[i]*(float)RD_increase;
+                    cantarMentiras[i]+=cantarMentiras[i]*(float)RD_increase/16;
+
+                }
+                else{
+                   // cantarMentiras[i]=cantarMentiras[i]*(float)RD_decrease;
+                    cantarMentiras[i]-=cantarMentiras[i]*(float)RD_decrease/16;
+
+                }
+                if(cantarMentiras[i]>(float)0.85){
+                    cantarMentiras[i]=(float)0.35;
+                }
+                if(cantarMentiras[i]<(float)0.05){
+                    cantarMentiras[i]=(float)0.2;
+
+                }
+            }
+
+        }
+    }
     public void reinforceDesconfianza(int cartasEnMesa, int cartasXogadas,int reforzo) {
-        double RD_increase=0.7;
-        double RD_decrease=0.3;
 
+        double RD_increase=0.5;
+        double RD_decrease=0.3;
         switch (reforzo) {
             case 1:    //Refuerzo positivo (acerté)
 
                 for(int i=0; i<3; i++){
                     if(i==cartasXogadas){
-                        MatrizDeDesconfianza[cartasEnMesa-1][i]+= RD_increase*MatrizDeDesconfianza[cartasEnMesa-1][i]/3;
+                        MatrizDeDesconfianza[cartasEnMesa-1][i]+= RD_increase*MatrizDeDesconfianza[cartasEnMesa-1][i]/8;
                         if (MatrizDeDesconfianza[cartasEnMesa-1][i]>0.8){
                             MatrizDeDesconfianza[cartasEnMesa-1][i]=(float)0.8;
                         }
                     }
                     else{
-                        MatrizDeDesconfianza[cartasEnMesa-1][i]-= RD_decrease*MatrizDeDesconfianza[cartasEnMesa-1][i];
+                        MatrizDeDesconfianza[cartasEnMesa-1][i]-= RD_decrease*MatrizDeDesconfianza[cartasEnMesa-1][i]/8;
                         if(MatrizDeDesconfianza[cartasEnMesa-1][i]<0.15){
                             MatrizDeDesconfianza[cartasEnMesa-1][i]=(float)0.15;
                         }
@@ -393,15 +515,15 @@ public class Player {
 
                 for(int i=0; i<3; i++){
                     if(i==cartasXogadas){
-                        MatrizDeDesconfianza[cartasEnMesa-1][i]-= RD_decrease*MatrizDeDesconfianza[cartasEnMesa-1][i];
+                        MatrizDeDesconfianza[cartasEnMesa-1][i]-= RD_decrease*MatrizDeDesconfianza[cartasEnMesa-1][i]/8;
                         if (MatrizDeDesconfianza[cartasEnMesa-1][i]<0.15){
                             MatrizDeDesconfianza[cartasEnMesa-1][i]=(float)0.15;
                         }
                     }
                     else{
-                        MatrizDeDesconfianza[cartasEnMesa-1][i]+= RD_increase*MatrizDeDesconfianza[cartasEnMesa-1][i]/3;
-                        if(MatrizDeDesconfianza[cartasEnMesa-1][i]>0.8){
-                            MatrizDeDesconfianza[cartasEnMesa-1][i]=(float)0.8;
+                        MatrizDeDesconfianza[cartasEnMesa-1][i]+= RD_increase*MatrizDeDesconfianza[cartasEnMesa-1][i]/8;
+                        if(MatrizDeDesconfianza[cartasEnMesa-1][i]>0.8){ //previamente 0.8
+                            MatrizDeDesconfianza[cartasEnMesa-1][i]=(float)0.65;
                         }
                     }
                 }
@@ -413,26 +535,20 @@ public class Player {
         }
 
     }
-    public float[][] leerDesconfianza (String archivoMatriz){
 
-        float[][] matriz = { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 },
-                { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 },
-                { 0, 0, 0 }, { 0, 0, 0 } };
-
-        File archivo = new File(gameActivity.getApplicationContext().getFilesDir(), archivoMatriz );
+    public void leerMentiras(String archivoMentiras){
+        File archivo = new File(gameActivity.getApplicationContext().getFilesDir(), archivoMentiras );
         try {
             FileReader fr = new FileReader(archivo);
             BufferedReader br = new BufferedReader(fr);
             String[] valor;
             String linea;
-            int num_fila=0;
-            while((linea=br.readLine())!=null){
+            while(!(linea=br.readLine()).isEmpty()){
                 valor=linea.split(" /");
-                int i=0,j=0;
-                for (i=0;i<9;i++){
-                    matriz[num_fila][i]=Float.parseFloat(valor[i]);
+                int i=0;
+                for (i=0;i<cantarMentiras.length;i++){
+                   cantarMentiras[i]=Float.parseFloat(valor[i]);
                 }
-                num_fila++;
             }
             fr.close();
 
@@ -440,10 +556,102 @@ public class Player {
         catch (Exception e){
             e.printStackTrace();
         }
+    }
+    public float[][] leerDesconfianza (String archivoMatriz){
+
+        float[][] matriz = { { (float) 0.32432523, (float) 0.6002512, (float) 0.6002512 },
+        { (float) 0.70688003, (float) 0.2638012, (float) 0.2669042 },
+        { (float) 0.78326017, (float) 0.29855278, (float) 0.22972664 },
+        { (float) 0.7309259, (float) 0.22972664, (float) 0.22948164 },
+        { (float) 0.65, (float) 0.29638794, (float) 0.26188838 },
+        { (float) 0.6411631, (float) 0.29638794, (float) 0.29638794 },
+        { (float) 0.6111439, (float) 0.43592772, (float) 0.43592772 },
+        { (float) 43276682, (float) 0.2942388, (float) 0.43276682 },
+        { (float) 0.33543226, (float) 0.33543226, (float) 0.27658448 },
+        { (float) 0.33, (float) 0.33, (float) 0.33 },
+        { (float) 0.33, (float) 0.33, (float) 0.33 },
+        { (float) 0.33, (float) 0.33, (float) 0.33 },
+        { (float) 0.33, (float) 0.33, (float) 0.333 },
+        { (float) 0.33, (float) 0.33, (float) 0.333 },
+        { (float) 0.33, (float) 0.333, (float) 0.33 },
+                { (float) 0.333, (float) 0.33, (float) 0.33 },
+                { (float) 0.33, (float) 0.333, (float) 0.333 },
+                { (float) 0.333, (float) 0.33, (float) 0.333 }
+        };
+
+       // matriz=MatrizDeDesconfianza;
+
+        try {
+            File archivo = new File(gameActivity.getApplicationContext().getFilesDir(), archivoMatriz);
+            FileReader fr = new FileReader(archivo);
+            BufferedReader br = new BufferedReader(fr);
+            String[] valor;
+            String linea;
+            int num_fila=0;
+            while(!(linea=br.readLine()).isEmpty()){
+                valor=linea.split(" /");
+                Log.i("V_LINEA",linea);
+                int i=0,j=0;
+                for (i=0;i<3;i++){
+                    //matriz[num_fila][i]=Float.parseFloat(valor[i]);
+                    MatrizDeDesconfianza[num_fila][i]=Float.parseFloat(valor[i]);
+                    Log.i("LeoDescTXT"+id,"MD +["+num_fila+"]["+i+"]= "+MatrizDeDesconfianza[num_fila][i]);
+                }
+                num_fila++;
+            }
+            fr.close();
+
+        }
+        catch (FileNotFoundException flne) {
+            try {
+                File archivo = new File(gameActivity.getApplicationContext().getFilesDir(), archivoMatriz);
+                MatrizDeDesconfianza=matriz;
+                archivo.createNewFile();
+            }
+            catch (Exception e){
+                //   Log.i("PUÑETA","Non habia ficheiro");
+                e.printStackTrace();
+            }
+
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
 
         return matriz;
     }
     //private void escribirDesconfianza(float[][] matriz,String archivoDesconfianza){
+
+    public void escribirCantarMentiras(){
+        String archivoMentiras="";
+        switch(id){
+            case 2:
+                archivoMentiras="archivoMentiras2.txt";
+                break;
+            case 3:
+                archivoMentiras="archivoMentiras3.txt";
+                break;
+            case 4:
+                archivoMentiras="archivoMentiras4.txt";
+                break;
+        }
+        File archivo = new File(gameActivity.getApplicationContext().getFilesDir(), archivoMentiras);
+        try {
+            FileWriter fw = new FileWriter(archivo);
+
+            int i = 0;
+            for (int k = 0; k < cantarMentiras.length; k++) {
+                    fw.write(Float.toString(cantarMentiras[k]) + " /");
+            }
+            fw.close();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
     public void escribirDesconfianza(){
     String archivoDesconfianza="";
         switch(id){
@@ -457,10 +665,6 @@ public class Player {
                 archivoDesconfianza=archivoDesconfianza4;
                 break;
         }
-
-
-
-
         File archivo = new File(gameActivity.getApplicationContext().getFilesDir(), archivoDesconfianza);
         try {
             FileWriter fw = new FileWriter(archivo);
@@ -469,6 +673,7 @@ public class Player {
             for (int k = 0; k < 9; k++) {
                 for (i = 0; i < 3; i++) {
                     fw.write(Float.toString(MatrizDeDesconfianza[k][i]) + " /");
+                    Log.i(archivoDesconfianza,Float.toString(MatrizDeDesconfianza[k][i]) + " /");
                 }
                 fw.write("\n");
             }
