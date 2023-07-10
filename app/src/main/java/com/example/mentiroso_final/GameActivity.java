@@ -138,7 +138,7 @@ public class GameActivity extends AppCompatActivity {
                 toast = Toast.makeText(this,"Se han descartado los "+numero+" del jugador 4", Toast.LENGTH_SHORT);
                 toast.show();
             }
-            displayPlayerCards();
+            //displayPlayerCards();
             levantarBtt.setEnabled(false);
             if (gameState.fueMentira) toast = Toast.makeText(this, "Era mentira! El jugador 4 se lleva "+gameState.tamañoLevantar, Toast.LENGTH_SHORT);
             else toast = Toast.makeText(this, "Era verdad! Te llevas "+gameState.tamañoLevantar, Toast.LENGTH_SHORT);
@@ -152,7 +152,7 @@ public class GameActivity extends AppCompatActivity {
             turn = false;
             gameState.echarCarta(selectedCards, player1);
             selectedCards.clear();
-            displayPlayerCards();
+            //displayPlayerCards();
         });
 
         mentirBtt.setOnClickListener(v -> {
@@ -161,7 +161,7 @@ public class GameActivity extends AppCompatActivity {
             turn = false;
             gameState.mentir(selectedCards, player1, valorSpinner);
             selectedCards.clear();
-            displayPlayerCards();
+            //displayPlayerCards();
             //clearColorFilterRecycler();
         });
         ///////////////////////////////////////////////////

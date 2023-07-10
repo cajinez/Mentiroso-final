@@ -134,6 +134,7 @@ public class Game {
         Log.i("CARTAS JUGADAS", cartasJugadas);
         Log.i("CARTAS EN LA MESA", tableCards.toString());
         gameActivity.textGen.setText("Se juega a "+ numeroJugada);
+        gameActivity.displayPlayerCards();
         latch.countDown();
     }
     public void mentir(ArrayList<Card> cards, Player player, int valorMentira){
@@ -170,6 +171,7 @@ public class Game {
         Log.i("CARTAS EN LA MESA", tableCards.toString());
         this.fueMentira=true;
         gameActivity.textGen.setText("Se juega a "+ numeroJugada);
+        gameActivity.displayPlayerCards();
         latch.countDown();
     }
     /*
@@ -255,6 +257,7 @@ public class Game {
         tamañoLevantar=tableCards.size();
         tableCards.clear();
         gameActivity.textGen.setText("");
+        gameActivity.displayPlayerCards();
         latch.countDown();
     }
 
